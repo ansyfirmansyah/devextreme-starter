@@ -1,0 +1,68 @@
+.gridHeader {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.addButton {
+    background-color: #337ab7;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.addButton .dx-icon {
+    font-size: 16px;
+}
+
+.actionCell {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+:global(.dx-datagrid-headers .dx-header-row) .headerCentered {
+  text-align: center !important;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #efefef;
+  margin-top: 20px;
+}
+
+.buttonsContainer .dx-button {
+    min-width: 120px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3; /* Lingkaran dasar */
+  border-top: 5px solid #3498db; /* Bagian atas yang akan berputar */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,148 @@
+/* --- 1. GENERAL & FONT SETUP --- */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* HAPUS overflow: hidden; agar scroll bisa muncul jika diperlukan */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+}
+
+:root {
+  --toolbar-height: 60px;
+  --content-padding: 24px;
+}
+
+/* --- 2. MAIN APP LAYOUT CONTAINER --- */
+.app-container {
+  height: 100vh; /* Gunakan vh untuk lebih konsisten */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- 3. TOOLBAR STYLING --- */
+.app-container > .dx-toolbar {
+  flex-shrink: 0;
+  height: var(--toolbar-height);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0 16px;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+/* --- 4. DRAWER & CONTENT AREA (THE REAL FINAL FIX) --- */
+.app-container > .dx-drawer {
+  flex-grow: 1;
+  min-height: 0; /* Trik penting untuk flex child */
+}
+
+.dx-drawer-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.dx-drawer-panel-content {
+  flex-shrink: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.dx-drawer-content {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex; /* Ini penting */
+  flex-direction: column; /* Ini penting */
+  padding: 0 !important;
+}
+
+/* KUNCI UTAMA DI SINI */
+.content-block {
+  flex-grow: 1; /* Biarkan content-block mengisi sisa ruang vertikal */
+  padding: var(--content-padding);
+  box-sizing: border-box;
+  display: flex; /* Jadikan flex agar DataGrid bisa mengisi 100% */
+  flex-direction: column; /* TAMBAH: Agar child elements tersusun vertikal */
+  min-height: 0; /* Trik "ajaib" agar anak dengan height: 100% bekerja */
+  overflow: hidden; /* TAMBAH: Cegah content meluber keluar */
+  background-color: var(--dx-body-background-color, #ffffff);
+}
+
+/* --- 5. DATAGRID SPECIFIC FIXES --- */
+.dx-datagrid {
+  flex-grow: 1; /* Ambil sisa ruang yang tersedia */
+  min-height: 0; /* Penting untuk flex child */
+  max-height: calc(100vh - var(--toolbar-height) - var(--content-padding) * 2 - 40px);
+  /* 40px adalah estimasi untuk spacing dan border */
+}
+
+/* Pastikan DataGrid scrolling bekerja dengan baik */
+.dx-datagrid .dx-datagrid-rowsview {
+  max-height: 100%;
+}
+
+.dx-datagrid .dx-scrollable-container {
+  height: 100% !important;
+}
+
+/* --- 6. CUSTOM MENU ITEM STYLING --- */
+.drawer-content {
+  background-color: var(--dx-drawer-background-color, #f8f8f8);
+  height: 100%;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.drawer-collapsed .menu-item-text {
+  display: none;
+}
+
+.panel-list .dx-list-item-content {
+  padding: 0 !important;
+}
+
+.drawer-collapsed .dx-treeview-node {
+  padding-left: 0 !important;
+}
+
+.drawer-collapsed .menu-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.drawer-expanded .menu-item {
+  padding: 10px 20px;
+}
+
+.panel-list .dx-list-item-selected {
+  font-weight: bold;
+  background-color: var(--dx-list-item-selected-background-color, #e0e0e0);
+}
+
+.drawer-collapsed .dx-treeview-item-content {
+  justify-content: center;
+}
+
+/* --- 7. STYLE UNTUK TOOLBAR GRID & FORM --- */
+.grid-toolbar-header.dx-item {
+  width: 100%;
+}
+
+.form-container {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+}
+
+/* --- 8. HIDE DEVEXPRESS LICENSE BANNER --- */
+.dx-licence-banner {
+  display: none !important;
+}
