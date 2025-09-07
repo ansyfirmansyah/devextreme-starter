@@ -15,6 +15,7 @@ const newSalesTemplate = {
 const salesDataSource = new DataSource(salesStore);
 
 const SalesPage = () => {
+  const [salesDataSource] = useState(() => new DataSource(salesStore));
   const [viewMode, setViewMode] = useState("grid");
   const [activeFormData, setActiveFormData] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // Loading hanya untuk aksi, bukan load awal
@@ -24,18 +25,18 @@ const SalesPage = () => {
       // 4. Dapatkan store dari dataSource yang selalu ada
       const store = salesDataSource.store();
 
-      if (data.id) { // Mode Update
-        await store.update(data.id, data);
+      if (data.sales_id) { // Mode Update
+        await store.update(data.sales_id, data);
       } else { // Mode Create
         await store.insert(data);
       }
 
       setViewMode('grid');
       // Perintahkan dataSource untuk memuat ulang data agar grid ter-update
-      await salesDataSource.load();
+      // await salesDataSource.reload();
     } catch (err) {
-      console.error(err);
-      notify('Failed to save sales data.', 'error', 3000);
+      console.log('errornyaa---> ' + err);
+      notify(err ? err : 'Failed to save sales data.', 'error', 3000);
     }
   }, []);
 
@@ -44,15 +45,33 @@ const SalesPage = () => {
     setViewMode("form");
   }, []);
 
-  const handleViewClick = (data) => {
-    setActiveFormData(data);
-    setViewMode("view");
-  };
+  const handleViewClick = useCallback(async (id) => {
+    try {
+      setIsLoading(true);
+      const data = await salesStore.byKey(id); // Menggunakan store untuk fetch by key
+      setActiveFormData(data);
+      setViewMode("view");
+    } catch (err) {
+      console.error('Load data error:', err);
+      notify('Failed to load sales data.', 'error', 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const handleEditClick = (data) => {
-    setActiveFormData(data);
-    setViewMode("form");
-  };
+  const handleEditClick = useCallback(async (id) => {
+    try {
+      setIsLoading(true);
+      const data = await salesStore.byKey(id); // Menggunakan store untuk fetch by key
+      setActiveFormData(data);
+      setViewMode("form");
+    } catch (err) {
+      console.error('Load data error:', err);
+      notify('Failed to load sales data.', 'error', 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleDeleteClick = useCallback(async (id) => {
     const result = await confirm('Are you sure you want to delete this sales data?', 'Confirm Deletion');
@@ -62,7 +81,7 @@ const SalesPage = () => {
         const store = salesDataSource.store();
         await store.remove(id);
         // Grid akan refresh otomatis karena onRemoved, tapi ini lebih aman
-        await salesDataSource.load();
+        await salesDataSource.reload();
       } catch (err) {
         console.error(err);
         notify('Failed to delete sales data.', 'error', 3000);

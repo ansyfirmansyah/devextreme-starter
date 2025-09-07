@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from '../config/apiConfig';
  */
 export const getOutletLookupStore = () => {
     return createStore({
-        key: 'id',
+        key: 'outlet_id',
         loadUrl: API_ENDPOINTS.outlets.lookup
     });
 };
