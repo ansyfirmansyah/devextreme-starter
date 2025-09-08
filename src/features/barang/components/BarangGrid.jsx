@@ -4,9 +4,9 @@ import DataGrid, {
   Paging,
   FilterRow,
   SearchPanel,
-  RequiredRule,
   HeaderFilter,
   Pager,
+  MasterDetail,
 } from "devextreme-react/data-grid";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
@@ -15,23 +15,24 @@ import { API_ENDPOINTS } from "../../../config/apiConfig";
 
 import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
+import DetailGrid from "./DetailGrid";
 
-// Buat store untuk DataGrid dan ekspor untuk digunakan di SalesPage
-export const salesStore = createStore({
+// Buat store untuk DataGrid dan ekspor untuk digunakan di BarangPage
+export const barangStore = createStore({
   // primary key disesuaikan dengan nama primary key di tabel database
-  key: "sales_id",
+  key: "barang_id",
   // List API yang digunakan untuk operasi CRUD
-  loadUrl: API_ENDPOINTS.sales.get,
-  insertUrl: API_ENDPOINTS.sales.post,
-  updateUrl: API_ENDPOINTS.sales.put,
-  deleteUrl: API_ENDPOINTS.sales.delete,
+  loadUrl: API_ENDPOINTS.barang.get,
+  insertUrl: API_ENDPOINTS.barang.post,
+  updateUrl: API_ENDPOINTS.barang.put,
+  deleteUrl: API_ENDPOINTS.barang.delete,
   // Event handler untuk menampilkan notifikasi
-  onInserted: () => notify("Sales created successfully", "success", 2000),
-  onUpdated: () => notify("Sales updated successfully", "success", 2000),
-  onRemoved: () => notify("Sales deleted successfully", "success", 2000),
+  onInserted: () => notify("Data created successfully", "success", 2000),
+  onUpdated: () => notify("Data updated successfully", "success", 2000),
+  onRemoved: () => notify("Data deleted successfully", "success", 2000),
 });
 
-const SalesGrid = ({
+const BarangGrid = ({
   dataSource,
   onAddClick,
   onViewClick,
@@ -42,9 +43,9 @@ const SalesGrid = ({
   const renderActionCell = ({ data }) => {
     return (
       <ActionCell
-        onView={() => onViewClick(data.sales_id)}
-        onEdit={() => onEditClick(data.sales_id)}
-        onDelete={() => onDeleteClick(data.sales_id)}
+        onView={() => onViewClick(data.barang_id)}
+        onEdit={() => onEditClick(data.barang_id)}
+        onDelete={() => onDeleteClick(data.barang_id)}
       />
     );
   };
@@ -59,8 +60,8 @@ const SalesGrid = ({
     >
       // Header grid dengan tombol Add
       <PageHeader
-        title="Sales"
-        buttonText="Add Sales"
+        title="Master Barang"
+        buttonText="Add Barang"
         onButtonClick={onAddClick}
       />
       <SearchPanel visible={true} width={240} placeholder="Search..." />
@@ -72,9 +73,9 @@ const SalesGrid = ({
         allowedPageSizes={[5, 10, 20]}
         showInfo={true}
       />
-      <Column dataField="sales_kode" caption="Kode Sales"></Column>
-      <Column dataField="sales_nama" caption="Nama Sales"></Column>
-      <Column dataField="outlet_display" caption="Outlet"></Column>
+      <Column dataField="barang_kode" caption="Kode"></Column>
+      <Column dataField="barang_nama" caption="Nama Barang"></Column>
+      <Column dataField="klasifikasi_display" caption="Klasifikasi"></Column>
       <Column
         caption="Actions"
         width={120}
@@ -83,8 +84,9 @@ const SalesGrid = ({
         allowFiltering={false}
         allowSorting={false}
       />
+      <MasterDetail enabled={true} component={DetailGrid} />
     </DataGrid>
   );
 };
 
-export default SalesGrid;
+export default BarangGrid;

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Form, {
   SimpleItem,
   GroupItem,
@@ -6,12 +6,9 @@ import Form, {
 } from "devextreme-react/form";
 
 import FormActions from "../../../components/ui/FormActions";
-import { getOutletLookupStore } from "../../../services/salesService";
+import { createParentDataSource } from "../../../services/klasifikasiService";
 
-// Data source untuk dropdown Outlet di form
-const outletDataSource = getOutletLookupStore();
-
-const SalesForm = ({
+const KlasifikasiForm = ({
   initialData,
   onSave,
   onCancel,
@@ -19,6 +16,18 @@ const SalesForm = ({
   onBack,
 }) => {
   const formRef = useRef(null);
+  // Existing id dari initialData, atau 0 jika create
+  const [existingId, setExistingId] = useState(initialData?.klas_id || 0);
+
+  // Data Source untuk SelectBox Klasifikasi Induk
+  // Menggunakan UseMemo agar dataSource tidak dibuat ulang setiap render
+  // tapi hanya dibuat ulang jika existingId berubah
+  const parentDataSource = useMemo(
+    () => {
+      return createParentDataSource(existingId);
+    },
+    [existingId] // dependency ke existingId
+  );
 
   // Handler untuk submit form
   const handleSubmit = (e) => {
@@ -49,28 +58,31 @@ const SalesForm = ({
           showColonAfterLabel={true}
           readOnly={readOnly}
         >
-          <GroupItem caption="Sales Details">
-            <SimpleItem dataField="sales_kode" label={{ text: "Kode" }}>
+          <GroupItem caption="Klasifikasi Details">
+            <SimpleItem dataField="klas_kode" label={{ text: "Kode" }}>
               <RequiredRule />
             </SimpleItem>
-            <SimpleItem dataField="sales_nama" label={{ text: "Nama Sales" }}>
+            <SimpleItem
+              dataField="klas_nama"
+              label={{ text: "Nama Klasifikasi" }}
+            >
               <RequiredRule />
             </SimpleItem>
           </GroupItem>
-          <GroupItem caption="Outlet Information">
+          <GroupItem caption="Parent Information">
             <SimpleItem
-              dataField="outlet_id"
+              dataField="klas_parent_id"
               editorType="dxSelectBox"
               editorOptions={{
-                dataSource: outletDataSource,
-                valueExpr: "outlet_id",
+                dataSource: parentDataSource,
+                valueExpr: "klas_id",
                 displayExpr: "display",
                 searchEnabled: true,
+                placeholder: "Pilih Klasifikasi Induk...",
+                showClearButton: true,
               }}
-              label={{ text: "Outlet" }}
-            >
-              <RequiredRule message="Outlet is required" />
-            </SimpleItem>
+              label={{ text: "Klasifikasi Induk" }}
+            ></SimpleItem>
           </GroupItem>
         </Form>
         <FormActions readOnly={readOnly} onCancel={onCancel} onBack={onBack} />
@@ -79,4 +91,4 @@ const SalesForm = ({
   );
 };
 
-export default SalesForm;
+export default KlasifikasiForm;
