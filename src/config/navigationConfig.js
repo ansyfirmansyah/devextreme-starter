@@ -5,7 +5,11 @@ import React from "react";
 
 import CustomersPage from "../features/customers/CustomersPage";
 import OutletsPage from "../features/outlets/OutletsPage";
-import { DropDownTreePage, SalesReportPage, StockReportPage } from "../features/SamplePages";
+import {
+  DropDownTreePage,
+  SalesReportPage,
+  StockReportPage,
+} from "../features/SamplePages";
 import SalesPage from "../features/sales/SalesPage";
 import KlasifikasiPage from "../features/klasifikasi/KlasifikasiPage";
 import BarangPage from "../features/barang/BarangPage";
@@ -13,12 +17,12 @@ import SampleAddToGrid from "../features/SampleAddToGrid";
 
 // 1. Ubah struktur menjadi tree. Gunakan properti 'items' untuk sub-menu.
 export const navigationRoutes = [
-  {
-    id: 1,
-    text: "Customers",
-    icon: "group",
-    component: CustomersPage,
-  },
+  // {
+  //   id: 1,
+  //   text: "Customers",
+  //   icon: "group",
+  //   component: CustomersPage,
+  // },
   {
     id: 2,
     text: "Outlets",
@@ -43,18 +47,18 @@ export const navigationRoutes = [
     icon: "contentlayout",
     component: BarangPage,
   },
-  {
-    id: 6,
-    text: "Test Drop Down Tree",
-    icon: "home",
-    component: DropDownTreePage,
-  },
-  {
-    id: 7,
-    text: "Test Add to Grid",
-    icon: "home",
-    component: SampleAddToGrid,
-  },
+  // {
+  //   id: 6,
+  //   text: "Test Drop Down Tree",
+  //   icon: "home",
+  //   component: DropDownTreePage,
+  // },
+  // {
+  //   id: 7,
+  //   text: "Test Add to Grid",
+  //   icon: "home",
+  //   component: SampleAddToGrid,
+  // },
   // {
   //   id: 999,
   //   text: 'Reports', // Menu ini tidak punya 'component', hanya sebagai folder

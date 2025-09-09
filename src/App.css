@@ -40,6 +40,10 @@ html, body, #root {
   min-height: 0; /* Trik penting untuk flex child */
 }
 
+.dx-drawer {
+  transition: all 0.3s ease;
+}
+
 .dx-drawer-wrapper {
   height: 100%;
   display: flex;
@@ -49,6 +53,12 @@ html, body, #root {
 .dx-drawer-panel-content {
   flex-shrink: 0;
   box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  transition: width 0.3s ease;
+}
+
+/* Optional: Tambahkan visual feedback saat hover */
+.drawer-content:hover {
+  background-color: var(--dx-drawer-background-color, #f0f0f0);
 }
 
 .dx-drawer-content {
@@ -100,7 +110,7 @@ html, body, #root {
   gap: 15px;
 }
 
-.drawer-collapsed .menu-item-text {
+.drawer-collapsed:not(:hover) .menu-item-text {
   display: none;
 }
 
@@ -113,7 +123,7 @@ html, body, #root {
 }
 
 .drawer-collapsed .menu-item {
-  justify-content: center;
+  justify-content: flex-start;
   padding: 10px 0;
 }
 
@@ -128,6 +138,23 @@ html, body, #root {
 
 .drawer-collapsed .dx-treeview-item-content {
   justify-content: center;
+}
+
+/* Tambahkan indicator visual saat drawer bisa di-hover */
+.drawer-collapsed .dx-drawer-panel-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(0,123,255,0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drawer-collapsed .dx-drawer-panel-content:hover::after {
+  opacity: 1;
 }
 
 /* --- 7. STYLE UNTUK TOOLBAR GRID & FORM --- */
