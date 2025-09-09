@@ -3,6 +3,7 @@ import Drawer from "devextreme-react/drawer";
 import TreeView from "devextreme-react/tree-view";
 import Toolbar, { Item } from "devextreme-react/toolbar";
 import { navigationRoutes } from "../../config/navigationConfig";
+import RealTimeClock from "./RealTimeClock";
 
 const renderMenuItem = (itemData) => {
   return (
@@ -96,6 +97,20 @@ const MainLayout = ({ activeMenu, onMenuClick, children, activeMenuId }) => {
           location="before"
         />
         <Item text={activeMenu} location="before" cssClass="header-title" />
+        <Item
+          render={() => <RealTimeClock />}
+          location="after"
+          locateInMenu="never"
+        />
+        <Item text="|" location="after" />
+        <Item
+          widget="dxButton"
+          location="after"
+          options={{
+            icon: "user",
+            onClick: () => alert("under constructions!"),
+          }}
+        />
       </Toolbar>
 
       <Drawer

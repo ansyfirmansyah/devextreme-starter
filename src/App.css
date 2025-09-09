@@ -1,10 +1,13 @@
 /* --- 1. GENERAL & FONT SETUP --- */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 :root {
@@ -22,16 +25,81 @@ html, body, #root {
 /* --- 3. TOOLBAR STYLING --- */
 .app-container > .dx-toolbar {
   flex-shrink: 0;
-  height: var(--toolbar-height);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 0 16px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Toolbar button styling */
+.app-container .dx-toolbar .dx-button {
+  background: transparent;
+  border: none;
+}
+
+.app-container .dx-toolbar-items-container {
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+}
+
+.app-container .dx-toolbar-after .dx-toolbar-button:last-child .dx-button-content {
+  background-color: #f39c12; /* Warna kuning-oranye */
+  border-radius: 8px; /* Membuat sudut lebih rounded */
+  padding: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.app-container .dx-toolbar-after .dx-toolbar-button:last-child .dx-icon {
+  color: #ffffff !important; /* Pastikan ikon tetap putih */
+}
+
+.app-container .dx-toolbar .dx-button .dx-icon {
+ color: #ffffff;
+ opacity: 0.9;
+}
+
+.app-container .dx-toolbar .dx-button:hover .dx-icon {
+ opacity: 1;
+}
+
+.dx-toolbar .dx-item-content {
+  display: flex;
   align-items: center;
 }
 
+.dx-toolbar-before,
+.dx-toolbar-after,
+.dx-toolbar-center {
+ display: flex;
+ align-items: center; /* Paksa semua item di dalam section ini untuk rata tengah */
+ height: 100%;
+}
+
+.dx-toolbar .dx-toolbar-item .dx-item-content {
+ display: flex;
+ align-items: center;
+ gap: 8px; /* Memberi jarak otomatis antara ikon dan teks (contoh: jam) */
+}
+
+.dx-toolbar-label.header-title {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding-left: 10px;
+}
+
+.app-container .dx-toolbar .dx-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* White text untuk toolbar */
 .header-title {
   font-size: 1.25rem;
   font-weight: 500;
   margin-left: 10px;
+  color: #ffffff;
 }
 
 /* --- 4. DRAWER & CONTENT AREA (THE REAL FINAL FIX) --- */
@@ -52,7 +120,7 @@ html, body, #root {
 
 .dx-drawer-panel-content {
   flex-shrink: 0;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
 }
 
@@ -85,7 +153,9 @@ html, body, #root {
 .dx-datagrid {
   flex-grow: 1; /* Ambil sisa ruang yang tersedia */
   min-height: 0; /* Penting untuk flex child */
-  max-height: calc(100vh - var(--toolbar-height) - var(--content-padding) * 2 - 40px);
+  max-height: calc(
+    100vh - var(--toolbar-height) - var(--content-padding) * 2 - 40px
+  );
   /* 40px adalah estimasi untuk spacing dan border */
 }
 
@@ -99,15 +169,38 @@ html, body, #root {
 }
 
 /* --- 6. CUSTOM MENU ITEM STYLING --- */
+/* Light sidebar */
 .drawer-content {
-  background-color: var(--dx-drawer-background-color, #f8f8f8);
+  background: #ffffff;
   height: 100%;
+  border-right: 1px solid #e1e5e9;
 }
 
+/* Modern menu item hover effect */
 .menu-item {
   display: flex;
   align-items: center;
   gap: 15px;
+  border-radius: 8px;
+  margin: 2px 0px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dx-treeview-item:hover .menu-item {
+  background: rgba(0, 123, 255, 0.08);
+  transform: translateX(2px);
+}
+
+/* Icon styling */
+.menu-item i {
+  font-size: 18px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.dx-treeview-item:hover .menu-item i {
+  opacity: 1;
+  color: #007bff;
 }
 
 .drawer-collapsed:not(:hover) .menu-item-text {
@@ -142,13 +235,18 @@ html, body, #root {
 
 /* Tambahkan indicator visual saat drawer bisa di-hover */
 .drawer-collapsed .dx-drawer-panel-content::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;
   width: 3px;
   height: 100%;
-  background: linear-gradient(to bottom, transparent, rgba(0,123,255,0.3), transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 123, 255, 0.3),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.2s ease;
 }
