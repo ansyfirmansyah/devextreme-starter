@@ -7,6 +7,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import BarangGrid, { barangStore } from "./components/BarangGrid";
 import BarangForm from "./components/BarangForm";
 import { Guid } from "devextreme/common";
+import { initTempDiskon, initTempOutlet } from "../../services/barangService";
 
 // Template data kosong untuk form create
 const newBarangTemplate = {
@@ -53,12 +54,17 @@ const BarangPage = () => {
   ); // Hanya perlu data source
 
   // Handler untuk tombol Add
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = useCallback(async () => {
+    // init temptable_id dengan Guid baru
+    const temptableOutlet = await initTempOutlet(0);
+    console.log("initTempOutlet response:", temptableOutlet);
+    const temptableDiskon = await initTempDiskon(0);
+    console.log("temptableDiskon response:", temptableDiskon);
     // Set data form ke template baru
     setActiveFormData({
       ...newBarangTemplate,
-      temptable_outlet_id: new Guid(),
-      temptable_diskon_id: new Guid(),
+      temptable_outlet_id: temptableOutlet?.temptable_outlet_id || new Guid(),
+      temptable_diskon_id: temptableDiskon?.temptable_diskon_id || new Guid(),
     });
     setViewMode("form");
   }, []);

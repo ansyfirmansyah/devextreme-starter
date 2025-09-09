@@ -38,8 +38,9 @@ export const API_ENDPOINTS = {
     delete: `${API_BASE_URL}/barang/delete`,
     refKlasifikasi: `${API_BASE_URL}/barang/ref/klasifikasi`,
     refOutlet: `${API_BASE_URL}/barang/ref/outlet`,
-    refDiskon: `${API_BASE_URL}/barang/ref/diskon`,
     detailDiskon: `${API_BASE_URL}/barang/detail/diskons`,
     detailOutlet: `${API_BASE_URL}/barang/detail/outlets`,
+    initTempDiskon: `${API_BASE_URL}/barang/detail/init/diskon`,
+    initTempOutlet: `${API_BASE_URL}/barang/detail/init/outlet`,
   },
 };

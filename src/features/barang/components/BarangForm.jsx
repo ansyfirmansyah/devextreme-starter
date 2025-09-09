@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Form, {
   SimpleItem,
   GroupItem,
@@ -8,9 +8,8 @@ import Form, {
 } from "devextreme-react/form";
 
 import FormActions from "../../../components/ui/FormActions";
+import { DropDownBox, TreeView } from "devextreme-react";
 import { refKlasifikasiDataSource } from "../../../services/barangService";
-import { DropDownBox, NumberBox, TreeList } from "devextreme-react";
-import { Selection } from "devextreme-react/cjs/tree-list";
 
 const BarangForm = ({
   initialData,
@@ -20,165 +19,52 @@ const BarangForm = ({
   onBack,
 }) => {
   const formRef = useRef(null);
-  const treeListRef = useRef(null);
-  
-  // Existing id dari initialData, atau 0 jika create
-  const [existingId, setExistingId] = useState(initialData?.barang_id || 0);
-  
-  // State untuk menyimpan nilai yang dipilih di dropdown tree
-  const [selectedKlasifikasi, setSelectedKlasifikasi] = useState(
-    initialData?.klas_id || null
-  );
 
-  // State untuk menyimpan loaded data
-  const [loadedData, setLoadedData] = useState([]);
-  const [displayText, setDisplayText] = useState("");
+  // State untuk form data dan DropDownBox klasifikasi
+  const [formData, setFormData] = useState(initialData);
+  const [selectedValueKlas, setSelectedValueKlas] = useState(null);
+  const [isDropDownOpenKlas, setIsDropDownOpenKlas] = useState(false);
 
-  // Memoized data source untuk tree
-  const klasifikasiDataSource = useMemo(() => {
-    console.log("Creating klasifikasi data source");
-    return refKlasifikasiDataSource();
+  // DataSource untuk klasifikasi
+  const lookupRefKlas = refKlasifikasiDataSource();
+
+  // Handler saat item di TreeView klasifikasi dipilih
+  const onTreeViewKlasSelectionChanged = useCallback((e) => {
+    const value = e.itemData.klas_id;
+    setSelectedValueKlas(value);
+    setIsDropDownOpenKlas(false);
   }, []);
 
-  // Function untuk load data dari store
-  const loadKlasifikasiData = useCallback(async () => {
-    try {
-      console.log("Loading klasifikasi data...");
-      const data = await klasifikasiDataSource.load();
-      console.log("Loaded data:", data);
-      setLoadedData(data);
-      
-      // Set display text jika ada selected value
-      if (selectedKlasifikasi) {
-        const selectedItem = data.find(item => item.klas_id === selectedKlasifikasi);
-        if (selectedItem) {
-          setDisplayText(selectedItem.display || selectedItem.klas_nama || "");
-        }
-      }
-    } catch (error) {
-      console.error("Error loading klasifikasi data:", error);
-    }
-  }, [klasifikasiDataSource, selectedKlasifikasi]);
-
-  // Load data saat component mount
-  useEffect(() => {
-    loadKlasifikasiData();
-  }, [loadKlasifikasiData]);
-
-  // Function untuk mendapatkan display text berdasarkan selected value
-  const getDisplayText = useCallback((value) => {
-    if (!value || !loadedData.length) return "";
-    
-    const findItem = (items, id) => {
-      for (const item of items) {
-        if (item.klas_id === id) {
-          return item;
-        }
-        if (item.children && item.children.length > 0) {
-          const found = findItem(item.children, id);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    const item = findItem(loadedData, value);
-    return item ? item.display || item.klas_nama : "";
-  }, [loadedData]);
-
-  // Function untuk mengecek apakah item adalah leaf (child terakhir)
-  const isLeafNode = useCallback((item) => {
-    return !item.children || item.children.length === 0;
+  // Handler saat nilai di DropDownBox klasifikasi berubah
+  const onDropDownBoxKlasValueChanged = useCallback((e) => {
+    setSelectedValueKlas(e.value);
+    // Update formData dengan klas_id yang baru
+    setFormData({ ...formData, klas_id: e.value });
   }, []);
 
-  // Handler untuk selection change pada tree
-  const handleTreeSelectionChanged = useCallback((e) => {
-    const selectedRowKeys = e.selectedRowKeys;
-    if (selectedRowKeys && selectedRowKeys.length > 0) {
-      const selectedKey = selectedRowKeys[0];
-      const selectedItem = e.component.getNodeByKey(selectedKey)?.data;
-      
-      // Hanya allow selection jika ini adalah leaf node (child)
-      if (selectedItem && isLeafNode(selectedItem)) {
-        setSelectedKlasifikasi(selectedKey);
-        
-        // Update display text
-        setDisplayText(selectedItem.display || selectedItem.klas_nama || "");
-        
-        // Update form data
-        const formInstance = formRef.current?.instance();
-        if (formInstance) {
-          formInstance.updateData("klas_id", selectedKey);
-        }
-      } else {
-        // Jika bukan leaf node, clear selection
-        e.component.clearSelection();
-      }
-    }
-  }, [isLeafNode]);
-
-  // Custom render untuk DropDownBox content
-  const renderTreeList = useCallback((args) => {
-    console.log("renderTreeList called, loadedData:", loadedData);
-    
-    if (!loadedData.length) {
-      return <div style={{ padding: '10px' }}>Loading...</div>;
-    }
-    
+  // Render konten TreeView untuk DropDownBox klasifikasi
+  const contentRenderKlas = useCallback(() => {
     return (
-      <TreeList
-        ref={treeListRef}
-        dataSource={loadedData}
+      <TreeView
+        dataSource={lookupRefKlas}
+        dataStructure="plain"
         keyExpr="klas_id"
         parentIdExpr="klas_parent_id"
         displayExpr="display"
-        showBorders={false}
-        selection={{ mode: "single" }}
-        selectedRowKeys={selectedKlasifikasi ? [selectedKlasifikasi] : []}
-        onSelectionChanged={handleTreeSelectionChanged}
-        onRowClick={(e) => {
-          // Prevent selection of parent nodes on row click
-          if (!isLeafNode(e.data)) {
-            e.event.preventDefault();
-            return;
+        selectionMode="single"
+        selectByClick={true}
+        onItemSelectionChanged={onTreeViewKlasSelectionChanged}
+        onContentReady={(e) => {
+          // Sinkronisasi saat dropdown dibuka
+          if (selectedValueKlas) {
+            e.component.selectItem(selectedValueKlas);
+          } else {
+            e.component.unselectAll();
           }
         }}
-        onCellClick={(e) => {
-          // Handle expand/collapse on parent node click
-          if (!isLeafNode(e.data) && e.column.dataField === "display") {
-            if (e.component.isRowExpanded(e.key)) {
-              e.component.collapseRow(e.key);
-            } else {
-              e.component.expandRow(e.key);
-            }
-          }
-        }}
-        rootValue={null}
-        autoExpandAll={false}
-        showRowLines={true}
-        showColumnLines={false}
-        columnAutoWidth={true}
-      >
-        <Selection mode="single" />
-      </TreeList>
+      />
     );
-  }, [loadedData, selectedKlasifikasi, handleTreeSelectionChanged, isLeafNode]);
-
-  // Handler untuk dropdown value change
-  const handleDropdownValueChanged = useCallback((e) => {
-    console.log("Dropdown value changed:", e.value);
-    setSelectedKlasifikasi(e.value);
-    
-    // Update display text
-    if (e.value && loadedData.length) {
-      const selectedItem = loadedData.find(item => item.klas_id === e.value);
-      if (selectedItem) {
-        setDisplayText(selectedItem.display || selectedItem.klas_nama || "");
-      }
-    } else {
-      setDisplayText("");
-    }
-  }, [loadedData]);
+  }, [selectedValueKlas, onTreeViewKlasSelectionChanged]);
 
   // Handler untuk submit form
   const handleSubmit = (e) => {
@@ -203,7 +89,7 @@ const BarangForm = ({
       <form onSubmit={handleSubmit}>
         <Form
           ref={formRef}
-          formData={initialData}
+          formData={formData}
           colCount={2}
           labelLocation="top"
           showColonAfterLabel={true}
@@ -235,33 +121,24 @@ const BarangForm = ({
             </SimpleItem>
           </GroupItem>
           <GroupItem caption="Klasifikasi Information">
-            <SimpleItem
-              dataField="klas_id"
-              editorType="dxDropDownBox"
-              editorOptions={{
-                value: selectedKlasifikasi,
-                displayExpr: () => displayText,
-                placeholder: "Pilih Klasifikasi...",
-                showClearButton: true,
-                onValueChanged: handleDropdownValueChanged,
-                contentTemplate: renderTreeList,
-                dropDownOptions: {
-                  height: 400,
-                  width: 500,
-                },
-                acceptCustomValue: false,
-                onOpened: () => {
-                  console.log("Dropdown opened");
-                  // Reload data jika diperlukan
-                  if (!loadedData.length) {
-                    loadKlasifikasiData();
-                  }
-                },
+            <DropDownBox
+              label="Klasifikasi"
+              labelMode="outside"
+              value={selectedValueKlas} // Nilai yang dipilih
+              opened={isDropDownOpenKlas} // Status terbuka/tutup
+              onOptionChanged={(e) => {
+                if (e.name === "opened") {
+                  setIsDropDownOpenKlas(e.value);
+                }
               }}
-              label={{ text: "Klasifikasi" }}
-            >
-              <RequiredRule message="Klasifikasi harus dipilih" />
-            </SimpleItem>
+              onValueChanged={onDropDownBoxKlasValueChanged}
+              valueExpr="klas_id"
+              displayExpr="display"
+              dataSource={lookupRefKlas}
+              placeholder="Pilih klasifikasi..."
+              showClearButton={true}
+              contentRender={contentRenderKlas} // Render TreeView di sini
+            />
           </GroupItem>
           <GroupItem caption="Outlet Information">
             {/* Tambahkan field outlet di sini jika diperlukan */}

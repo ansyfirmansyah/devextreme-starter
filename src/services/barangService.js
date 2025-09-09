@@ -43,9 +43,48 @@ export const diskonDataSource = (masterRawData) => {
 };
 
 export const refKlasifikasiDataSource = () => {
-  console.log("refKlasifikasiDataSource dipanggil");
   return createStore({
     key: "klas_id",
     loadUrl: API_ENDPOINTS.barang.refKlasifikasi,
   });
 };
+
+const a = () => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
+
+export const initTemp = async (barangId, url) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ barang_id: barangId }),
+    });
+    console.log("Response:", response);
+
+    if (!response.ok) {
+      // Jika respons tidak berhasil (misal, error 404)
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json(); // Parse respons sebagai JSON
+    console.log("Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+export const initTempOutlet = async (barangId) => {
+  return await initTemp(barangId, API_ENDPOINTS.barang.initTempOutlet);
+}
+
+export const initTempDiskon = async (barangId) => {
+  return await initTemp(barangId, API_ENDPOINTS.barang.initTempDiskon);
+}
