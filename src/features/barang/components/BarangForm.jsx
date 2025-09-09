@@ -12,6 +12,8 @@ import FormActions from "../../../components/ui/FormActions";
 import { DropDownBox, TreeView } from "devextreme-react";
 import { refKlasifikasiDataSource } from "../../../services/barangService";
 import BarangFormOutletGrid from "./BarangFormOutletGrid";
+import BarangFormDiskonGrid from "./BarangFormDiskonGrid";
+import { on } from "devextreme/events";
 
 const BarangForm = ({
   initialData,
@@ -137,7 +139,10 @@ const BarangForm = ({
             </SimpleItem>
             <SimpleItem dataField="barang_nama" label={{ text: "Nama Barang" }}>
               <RequiredRule />
-              <StringLengthRule max={100} message="Nama Barang max 100 karakter" />
+              <StringLengthRule
+                max={100}
+                message="Nama Barang max 100 karakter"
+              />
             </SimpleItem>
             <SimpleItem
               dataField="barang_harga"
@@ -146,7 +151,12 @@ const BarangForm = ({
               editorOptions={{
                 min: 0, // Mencegah nilai negatif melalui spin button
                 format: "#,##0.##", // Format angka (opsional, untuk tampilan)
-                showSpinButtons: true, // Menampilkan tombol panah atas/bawah
+                onValueChanged: (e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    barang_harga: parseFloat(e.component.option("value")) || 0,
+                  }));
+                },
               }}
             >
               {/* Aturan: Wajib diisi */}
@@ -195,11 +205,16 @@ const BarangForm = ({
           </GroupItem>
           <GroupItem caption="Outlet Information">
             <BarangFormOutletGrid
-            tempId={formData.temptable_outlet_id}
-            readOnly={readOnly}
+              tempId={formData.temptable_outlet_id}
+              readOnly={readOnly}
             />
           </GroupItem>
           <GroupItem caption="Diskon Information">
+            <BarangFormDiskonGrid
+              tempId={formData.temptable_diskon_id}
+              harga={formData.barang_harga}
+              readOnly={readOnly}
+            />
           </GroupItem>
         </Form>
         <FormActions readOnly={readOnly} onCancel={onCancel} onBack={onBack} />

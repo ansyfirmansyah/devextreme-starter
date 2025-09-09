@@ -153,3 +153,13 @@ export const refDetailOutletDataSource = (tempId) => {
     },
   });
 };
+
+export const refDetailDiskonDataSource = (tempId) => {
+  return createStore({
+    key: "barangd_id",
+    loadUrl: API_ENDPOINTS.barang.getTempDiskon,
+    loadParams: {
+      temptable_diskon_id: tempId,
+    },
+  });
+};
