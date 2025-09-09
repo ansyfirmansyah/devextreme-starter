@@ -1,6 +1,7 @@
 // Service ini spesifik untuk kebutuhan di luar createStore, seperti mengisi dropdown.
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import { API_ENDPOINTS } from "../config/apiConfig";
+import { Form } from "devextreme-react";
 
 /**
  * --- KONTRAK API BARU UNTUK BACKEND ---
@@ -49,24 +50,22 @@ export const refKlasifikasiDataSource = () => {
   });
 };
 
-const a = () => {
-  try {
-    
-  } catch (error) {
-    
-  }
-}
+export const refOutletDataSource = () => {
+  return createStore({
+    key: "outlet_id",
+    loadUrl: API_ENDPOINTS.barang.refOutlet,
+  });
+};
 
 export const initTemp = async (barangId, url) => {
   try {
+    const payload = new URLSearchParams({
+      barang_id: barangId.toString(),
+    });
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ barang_id: barangId }),
+      body: payload,
     });
-    console.log("Response:", response);
 
     if (!response.ok) {
       // Jika respons tidak berhasil (misal, error 404)
@@ -74,17 +73,83 @@ export const initTemp = async (barangId, url) => {
     }
 
     const responseData = await response.json(); // Parse respons sebagai JSON
-    console.log("Success:", responseData);
     return responseData;
   } catch (error) {
     console.error("Error:", error);
+    throw error; // Teruskan error agar bisa ditangani di pemanggilnya
   }
 };
 
 export const initTempOutlet = async (barangId) => {
   return await initTemp(barangId, API_ENDPOINTS.barang.initTempOutlet);
-}
+};
 
 export const initTempDiskon = async (barangId) => {
   return await initTemp(barangId, API_ENDPOINTS.barang.initTempDiskon);
-}
+};
+
+export const addDelTemp = async (payload, url, method) => {
+  try {
+    const response = await fetch(url, {
+      method: method,
+      body: payload,
+    }).catch((error) => {
+      // This block handles network errors (e.g., "Failed to fetch")
+      console.error("Network error:", error);
+      throw error;
+      // You can set an error state here to display a message to the user
+    });
+    console.error("Response-nya:", JSON.stringify(response));
+
+    if (!response.ok) {
+      const responseData = await response.json(); // Parse respons sebagai JSON
+      console.error("Response data:", responseData);
+      // Jika respons tidak berhasil (misal, error 404)
+      throw new Error(
+        responseData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const responseData = await response.json(); // Parse respons sebagai JSON
+    return responseData;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error; // Teruskan error agar bisa ditangani di pemanggilnya
+  }
+};
+
+export const addTempOutlet = async (payload) => {
+  console.log("addTempOutlet payload:", payload);
+  return await addDelTemp(payload, API_ENDPOINTS.barang.getTempOutlet, "POST");
+};
+
+export const addTempDiskon = async (payload) => {
+  return await addDelTemp(payload, API_ENDPOINTS.barang.getTempDiskon, "POST");
+};
+
+export const delTempOutlet = async (payload) => {
+  console.log("addTempOutlet payload:", payload);
+  return await addDelTemp(
+    payload,
+    API_ENDPOINTS.barang.getTempOutlet,
+    "DELETE"
+  );
+};
+
+export const delTempDiskon = async (payload) => {
+  return await addDelTemp(
+    payload,
+    API_ENDPOINTS.barang.getTempDiskon,
+    "DELETE"
+  );
+};
+
+export const refDetailOutletDataSource = (tempId) => {
+  return createStore({
+    key: "barango_id",
+    loadUrl: API_ENDPOINTS.barang.getTempOutlet,
+    loadParams: {
+      temptable_outlet_id: tempId,
+    },
+  });
+};

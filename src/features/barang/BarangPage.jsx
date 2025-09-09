@@ -57,9 +57,7 @@ const BarangPage = () => {
   const handleAddClick = useCallback(async () => {
     // init temptable_id dengan Guid baru
     const temptableOutlet = await initTempOutlet(0);
-    console.log("initTempOutlet response:", temptableOutlet);
     const temptableDiskon = await initTempDiskon(0);
-    console.log("temptableDiskon response:", temptableDiskon);
     // Set data form ke template baru
     setActiveFormData({
       ...newBarangTemplate,
@@ -77,8 +75,17 @@ const BarangPage = () => {
         const store = barangDataSource.store();
         // Gunakan store untuk fetch by key
         const data = await store.byKey(id);
+        // init temptable_id dengan Guid baru
+        const temptableOutlet = await initTempOutlet(id);
+        const temptableDiskon = await initTempDiskon(id);
         // Form menggunakan data yang sudah ditemukan, bukan template kosong
-        setActiveFormData(data);
+        setActiveFormData({
+          ...data,
+          temptable_outlet_id:
+            temptableOutlet?.temptable_outlet_id || new Guid(),
+          temptable_diskon_id:
+            temptableDiskon?.temptable_diskon_id || new Guid(),
+        });
         setViewMode("view");
       } catch (err) {
         console.error("Load data error:", err);
@@ -91,22 +98,34 @@ const BarangPage = () => {
   );
 
   // Handler untuk tombol Edit
-  const handleEditClick = useCallback(async (id) => {
-    try {
-      setIsLoading(true);
-      const store = barangDataSource.store();
-      // Gunakan store untuk fetch by key
-      const data = await store.byKey(id);
-      // Form menggunakan data yang sudah ditemukan, bukan template kosong
-      setActiveFormData(data);
-      setViewMode("form");
-    } catch (err) {
-      console.error("Load data error:", err);
-      notify(err?.message || "Failed to load data.", "error", 3000);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [barangDataSource]);
+  const handleEditClick = useCallback(
+    async (id) => {
+      try {
+        setIsLoading(true);
+        const store = barangDataSource.store();
+        // Gunakan store untuk fetch by key
+        const data = await store.byKey(id);
+        // init temptable_id dengan Guid baru
+        const temptableOutlet = await initTempOutlet(id);
+        const temptableDiskon = await initTempDiskon(id);
+        // Form menggunakan data yang sudah ditemukan, bukan template kosong
+        setActiveFormData({
+          ...data,
+          temptable_outlet_id:
+            temptableOutlet?.temptable_outlet_id || new Guid(),
+          temptable_diskon_id:
+            temptableDiskon?.temptable_diskon_id || new Guid(),
+        });
+        setViewMode("form");
+      } catch (err) {
+        console.error("Load data error:", err);
+        notify(err?.message || "Failed to load data.", "error", 3000);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [barangDataSource]
+  );
 
   // Handler untuk tombol Delete
   const handleDeleteClick = useCallback(

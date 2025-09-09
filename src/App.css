@@ -3,7 +3,7 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
-  /* HAPUS overflow: hidden; agar scroll bisa muncul jika diperlukan */
+  overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 }
 
@@ -67,7 +67,7 @@ html, body, #root {
   display: flex; /* Jadikan flex agar DataGrid bisa mengisi 100% */
   flex-direction: column; /* TAMBAH: Agar child elements tersusun vertikal */
   min-height: 0; /* Trik "ajaib" agar anak dengan height: 100% bekerja */
-  overflow: hidden; /* TAMBAH: Cegah content meluber keluar */
+  overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
   background-color: var(--dx-body-background-color, #ffffff);
 }
 

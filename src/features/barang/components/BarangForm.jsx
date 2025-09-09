@@ -1,15 +1,17 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Form, {
   SimpleItem,
   GroupItem,
   RequiredRule,
   NumericRule,
   RangeRule,
+  StringLengthRule,
 } from "devextreme-react/form";
 
 import FormActions from "../../../components/ui/FormActions";
 import { DropDownBox, TreeView } from "devextreme-react";
 import { refKlasifikasiDataSource } from "../../../services/barangService";
+import BarangFormOutletGrid from "./BarangFormOutletGrid";
 
 const BarangForm = ({
   initialData,
@@ -22,25 +24,46 @@ const BarangForm = ({
 
   // State untuk form data dan DropDownBox klasifikasi
   const [formData, setFormData] = useState(initialData);
-  const [selectedValueKlas, setSelectedValueKlas] = useState(null);
+  // const [selectedValueKlas, setSelectedValueKlas] = useState(null);
   const [isDropDownOpenKlas, setIsDropDownOpenKlas] = useState(false);
+  const [lookupRefKlas, setLookupRefKlas] = useState(null);
 
   // DataSource untuk klasifikasi
-  const lookupRefKlas = refKlasifikasiDataSource();
+  useEffect(() => {
+    // Ambil instance dari data source
+    const ds = refKlasifikasiDataSource();
+
+    // Load datanya
+    ds.load()
+      .then((data) => {
+        // Simpan hasilnya di state
+        setLookupRefKlas(data);
+      })
+      .catch((error) => {
+        console.error("Gagal memuat data klasifikasi:", error);
+      });
+
+    // Array dependensi kosong '[]' memastikan ini hanya berjalan sekali
+  }, []);
 
   // Handler saat item di TreeView klasifikasi dipilih
   const onTreeViewKlasSelectionChanged = useCallback((e) => {
-    const value = e.itemData.klas_id;
-    setSelectedValueKlas(value);
-    setIsDropDownOpenKlas(false);
-  }, []);
+    // Jika tidak (dipicu oleh program), hentikan eksekusi fungsi ini.
+    if (!e.event) {
+      return;
+    }
+    const newValue = e.itemData.klas_id;
 
-  // Handler saat nilai di DropDownBox klasifikasi berubah
-  const onDropDownBoxKlasValueChanged = useCallback((e) => {
-    setSelectedValueKlas(e.value);
-    // Update formData dengan klas_id yang baru
-    setFormData({ ...formData, klas_id: e.value });
-  }, []);
+    // LANGSUNG UPDATE STATE FORM UTAMA
+    // Ini akan otomatis me-render ulang Form dengan nilai baru
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      klas_id: newValue,
+    }));
+
+    // Tutup dropdown
+    setIsDropDownOpenKlas(false);
+  }, []); // Dependency tidak perlu karena setFormData stabil
 
   // Render konten TreeView untuk DropDownBox klasifikasi
   const contentRenderKlas = useCallback(() => {
@@ -55,16 +78,17 @@ const BarangForm = ({
         selectByClick={true}
         onItemSelectionChanged={onTreeViewKlasSelectionChanged}
         onContentReady={(e) => {
-          // Sinkronisasi saat dropdown dibuka
-          if (selectedValueKlas) {
-            e.component.selectItem(selectedValueKlas);
+          // Sinkronisasi sekarang membaca dari formData
+          const currentValue = formData.klas_id;
+          if (currentValue) {
+            e.component.selectItem(currentValue);
           } else {
             e.component.unselectAll();
           }
         }}
       />
     );
-  }, [selectedValueKlas, onTreeViewKlasSelectionChanged]);
+  }, [lookupRefKlas]);
 
   // Handler untuk submit form
   const handleSubmit = (e) => {
@@ -77,8 +101,18 @@ const BarangForm = ({
     const formInstance = formRef.current.instance();
     const validationResult = formInstance.validate();
 
+    // Validasi manual untuk field yang menggunakan render
+    const customValidationErrors = [];
+
+    if (!formData.klas_id) {
+      customValidationErrors.push({
+        field: "klas_id",
+        message: "Klasifikasi harus dipilih",
+      });
+    }
+
     // Jika valid, panggil onSave dengan data dari form
-    if (validationResult.isValid) {
+    if (validationResult.isValid && customValidationErrors.length === 0) {
       onSave(formInstance.option("formData"));
     }
   };
@@ -90,6 +124,7 @@ const BarangForm = ({
         <Form
           ref={formRef}
           formData={formData}
+          onFormDataChange={setFormData}
           colCount={2}
           labelLocation="top"
           showColonAfterLabel={true}
@@ -98,9 +133,11 @@ const BarangForm = ({
           <GroupItem caption="Barang Details">
             <SimpleItem dataField="barang_kode" label={{ text: "Kode" }}>
               <RequiredRule />
+              <StringLengthRule max={10} message="Kode max 10 karakter" />
             </SimpleItem>
             <SimpleItem dataField="barang_nama" label={{ text: "Nama Barang" }}>
               <RequiredRule />
+              <StringLengthRule max={100} message="Nama Barang max 100 karakter" />
             </SimpleItem>
             <SimpleItem
               dataField="barang_harga"
@@ -121,30 +158,48 @@ const BarangForm = ({
             </SimpleItem>
           </GroupItem>
           <GroupItem caption="Klasifikasi Information">
-            <DropDownBox
-              label="Klasifikasi"
-              labelMode="outside"
-              value={selectedValueKlas} // Nilai yang dipilih
-              opened={isDropDownOpenKlas} // Status terbuka/tutup
-              onOptionChanged={(e) => {
-                if (e.name === "opened") {
-                  setIsDropDownOpenKlas(e.value);
-                }
-              }}
-              onValueChanged={onDropDownBoxKlasValueChanged}
-              valueExpr="klas_id"
-              displayExpr="display"
-              dataSource={lookupRefKlas}
-              placeholder="Pilih klasifikasi..."
-              showClearButton={true}
-              contentRender={contentRenderKlas} // Render TreeView di sini
-            />
+            <SimpleItem
+              dataField="klas_id"
+              label={{ text: "Klasifikasi" }}
+              render={() => (
+                <DropDownBox
+                  // value sekarang membaca langsung dari formData
+                  readOnly={readOnly}
+                  value={formData.klas_id}
+                  opened={isDropDownOpenKlas}
+                  onOptionChanged={(e) => {
+                    if (e.name === "opened") setIsDropDownOpenKlas(e.value);
+                  }}
+                  // onValueChanged di DropDownBox menangani saat tombol 'clear' ditekan
+                  onValueChanged={(e) => {
+                    setFormData((prev) => ({ ...prev, klas_id: e.value }));
+                  }}
+                  valueExpr="klas_id"
+                  displayExpr="display"
+                  dataSource={lookupRefKlas}
+                  placeholder="Pilih klasifikasi..."
+                  showClearButton={true}
+                  contentRender={contentRenderKlas}
+                  isValid={formData.klas_id ? true : false}
+                  validationError={
+                    formData.klas_id
+                      ? null
+                      : { message: "Klasifikasi harus dipilih" }
+                  }
+                />
+              )}
+            >
+              {/* flag required ini tidak berfungsi, jadi validasi manual di handleSubmit */}
+              <RequiredRule />
+            </SimpleItem>
           </GroupItem>
           <GroupItem caption="Outlet Information">
-            {/* Tambahkan field outlet di sini jika diperlukan */}
+            <BarangFormOutletGrid
+            tempId={formData.temptable_outlet_id}
+            readOnly={readOnly}
+            />
           </GroupItem>
           <GroupItem caption="Diskon Information">
-            {/* Tambahkan field diskon di sini jika diperlukan */}
           </GroupItem>
         </Form>
         <FormActions readOnly={readOnly} onCancel={onCancel} onBack={onBack} />
