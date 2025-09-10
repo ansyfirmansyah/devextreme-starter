@@ -5,6 +5,7 @@ import TreeView from "devextreme-react/tree-view";
 import Toolbar, { Item } from "devextreme-react/toolbar";
 import { navigationRoutes } from "../../config/navigationConfig";
 import RealTimeClock from "./RealTimeClock";
+import Footer from "./Footer";
 
 // Fungsi helper untuk merender item menu
 const renderMenuItem = (itemData) => {
@@ -165,6 +166,7 @@ const MainLayout = () => {
           {/* Outlet akan me-render komponen halaman yang cocok dengan URL */}
           <Outlet />
         </div>
+        <Footer />
       </Drawer>
     </div>
   );

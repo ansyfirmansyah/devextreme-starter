@@ -65,7 +65,7 @@ body,
 
 .content-block {
   padding: var(--content-padding);
-  height: 100%;
+  height: calc(100% - 42px);
   box-sizing: border-box;
   overflow-y: auto;
   display: flex;

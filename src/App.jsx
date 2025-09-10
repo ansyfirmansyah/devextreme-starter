@@ -15,7 +15,7 @@ import MainLayout from "./components/ui/MainLayout";
 
 // Impor halaman default
 import { navigationRoutes } from "./config/navigationConfig";
-import { HomePage } from "./features/SamplePages";
+import { HomePage, NotFound, Privacy, Terms } from "./features/SamplePages";
 
 const App = () => {
   // Helper rekursif yang lebih sederhana untuk me-render rute
@@ -45,9 +45,10 @@ const App = () => {
         <Route index element={<HomePage />} />
         {/* Render semua rute dari config */}
         {renderRoutes(navigationRoutes)}
-
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
         {/* Fallback route untuk halaman yang tidak ditemukan */}
-        <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

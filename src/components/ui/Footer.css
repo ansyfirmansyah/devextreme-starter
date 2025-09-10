@@ -1,0 +1,29 @@
+.footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e7e7e7;
+  padding: 10px 20px;
+  color: #777;
+  font-size: 12px;
+  flex-shrink: 0; /* Mencegah footer menyusut */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Agar responsif di layar kecil */
+}
+
+.footer-left, .footer-center, .footer-right {
+    padding: 5px 0;
+}
+
+.footer-center a {
+  color: #337ab7;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.footer-center a:hover {
+  text-decoration: underline;
+}
