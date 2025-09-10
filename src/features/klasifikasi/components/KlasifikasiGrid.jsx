@@ -1,57 +1,66 @@
-import React from "react";
-import DataGrid, {
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+// 1. Perbaiki impor: Semua komponen terkait TreeList diimpor dari 'devextreme-react/tree-list'
+import {
+  TreeList,
   Column,
   Paging,
   FilterRow,
   SearchPanel,
   HeaderFilter,
   Pager,
-} from "devextreme-react/data-grid";
-import { createStore } from "devextreme-aspnet-data-nojquery";
+} from "devextreme-react/tree-list";
 import notify from "devextreme/ui/notify";
+import { confirm } from "devextreme/ui/dialog";
+import DataSource from "devextreme/data/data_source";
 
-import { API_ENDPOINTS } from "../../../config/apiConfig";
+// 2. Perbaiki path impor dengan menambahkan ekstensi file
+import PageHeader from "../../../components/ui/GridHeader.jsx";
+import ActionCell from "../../../components/ui/ActionCell.jsx";
+import { klasifikasiStore } from "../../../services/klasifikasiService.js";
 
-import PageHeader from "../../../components/ui/GridHeader";
-import ActionCell from "../../../components/ui/ActionCell";
-import { TreeList } from "devextreme-react";
+const KlasifikasiGrid = () => {
+  // Gunakan useState untuk membuat DataSource sekali saja
+  // Ini mencegah pembuatan ulang DataSource pada setiap render
+  // yang bisa menyebabkan masalah pada TreeList
+  const [klasifikasiDataSource] = useState(
+    () => new DataSource(klasifikasiStore)
+  );
+  const navigate = useNavigate();
 
-// Buat store untuk DataGrid dan ekspor untuk digunakan di KlasifikasiPage
-export const klasifikasiStore = createStore({
-  // primary key disesuaikan dengan nama primary key di tabel database
-  key: "klas_id",
-  // List API yang digunakan untuk operasi CRUD
-  loadUrl: API_ENDPOINTS.klasifikasi.get,
-  insertUrl: API_ENDPOINTS.klasifikasi.post,
-  updateUrl: API_ENDPOINTS.klasifikasi.put,
-  deleteUrl: API_ENDPOINTS.klasifikasi.delete,
-  // Event handler untuk menampilkan notifikasi
-  onInserted: () => notify("Data created successfully", "success", 2000),
-  onUpdated: () => notify("Data updated successfully", "success", 2000),
-  onRemoved: () => notify("Data deleted successfully", "success", 2000),
-});
+  /* Handler untuk tombol Add, View, Edit, Delete */
+  const handleAdd = () => navigate("new");
+  const handleView = (id) => navigate(`${id}`);
+  const handleEdit = (id) => navigate(`${id}/edit`);
+  const handleDelete = async (id) => {
+    const result = await confirm(
+      "Are you sure you want to delete this data?",
+      "Confirm Deletion"
+    );
+    if (result) {
+      try {
+        await klasifikasiStore.remove(id);
+        await klasifikasiDataSource.reload();
+      } catch (err) {
+        notify(err?.message || "Failed to delete data.", "error", 3000);
+      }
+    }
+  };
 
-const KlasifikasiGrid = ({
-  dataSource,
-  onAddClick,
-  onViewClick,
-  onEditClick,
-  onDeleteClick,
-}) => {
-  // Render cell untuk kolom aksi (view, edit, delete)
+  // Render fungsi khusus untuk kolom Actions
   const renderActionCell = ({ data }) => {
     return (
       <ActionCell
-        onView={() => onViewClick(data.klas_id)}
-        onEdit={() => onEditClick(data.klas_id)}
-        onDelete={() => onDeleteClick(data.klas_id)}
+        onView={() => handleView(data.klas_id)}
+        onEdit={() => handleEdit(data.klas_id)}
+        onDelete={() => handleDelete(data.klas_id)}
       />
     );
   };
 
   return (
     <TreeList
-      dataSource={dataSource}
+      dataSource={klasifikasiDataSource}
       height="100%"
       showBorders={true}
       rowAlternationEnabled={true}
@@ -60,11 +69,10 @@ const KlasifikasiGrid = ({
       parentIdExpr="klas_parent_id"
       rootValue={null}
     >
-      // Header grid dengan tombol Add
       <PageHeader
         title="Klasifikasi Management"
         buttonText="Add Klasifikasi"
-        onButtonClick={onAddClick}
+        onButtonClick={handleAdd}
       />
       <SearchPanel visible={true} width={240} placeholder="Search..." />
       <FilterRow visible={true} />
@@ -91,3 +99,4 @@ const KlasifikasiGrid = ({
 };
 
 export default KlasifikasiGrid;
+

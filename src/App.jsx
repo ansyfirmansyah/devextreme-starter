@@ -1,60 +1,55 @@
-/** routing dan membungkus halaman dengan layout */
-import React, { useState, useCallback } from "react";
-import "./App.css"; // Global styles
+/**
+ * File ini sekarang berfungsi sebagai pusat routing aplikasi.
+ */
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-// Impor Layout utama
+// Impor tema DevExtreme dan CSS khusus
+import "devextreme/dist/css/dx.light.css";
+import "./index.css";
+import "./App.css";
+
+// Layout utama yang akan membungkus semua halaman
 import MainLayout from "./components/ui/MainLayout";
-import { navigationRoutes } from "./config/navigationConfig";
+// Impor konfigurasi navigasi
 
-// Fungsi helper rekursif untuk mencari rute di dalam tree
-const findRouteById = (routes, id) => {
-  for (const route of routes) {
-    // Cek di level saat ini
-    if (route.id === id) {
-      return route;
-    }
-    // Jika ada sub-menu, cari di dalamnya
-    if (route.items) {
-      const found = findRouteById(route.items, id);
-      if (found) {
-        return found;
-      }
-    }
-  }
-  return null; // Tidak ditemukan
-};
+// Impor halaman default
+import { navigationRoutes } from "./config/navigationConfig";
+import { HomePage } from "./features/SamplePages";
 
 const App = () => {
-  const [activeMenuId, setActiveMenuId] = useState(
-    navigationRoutes[0]?.id || 0
-  );
+  // Helper rekursif yang lebih sederhana untuk me-render rute
+  const renderRoutes = (routes) => {
+    return routes.flatMap((route) => {
+      // Buat rute jika ada komponen
+      const currentRoute = route.component ? (
+        <Route
+          key={route.id}
+          // Path sekarang selalu diambil langsung dari config, tanpa wildcard
+          path={`${route.path}/*`} // Tambahkan '/*' agar nested routes di dalam komponen bisa berfungsi
+          element={<route.component />}
+        />
+      ) : null;
 
-  const handleMenuClick = useCallback((e) => {
-    setActiveMenuId(e.itemData.id);
-  }, []);
+      // Proses sub-menu jika ada
+      const childRoutes = route.items ? renderRoutes(route.items) : [];
 
-  // Cari rute berdasarkan ID yang aktif
-  const activeRoute = findRouteById(navigationRoutes, activeMenuId);
-
-  // Fungsi untuk merender halaman yang sesuai
-  const renderPage = () => {
-    if (activeRoute && activeRoute.component) {
-      const PageComponent = activeRoute.component;
-      return <PageComponent />;
-    }
-    return <h2>Page Not Found</h2>;
+      return [currentRoute, ...childRoutes].filter(Boolean);
+    });
   };
 
-  const activeMenuText = activeRoute ? activeRoute.text : "Dashboard";
-
   return (
-    <MainLayout
-      activeMenu={activeMenuText}
-      activeMenuId={activeMenuId}
-      onMenuClick={handleMenuClick}
-    >
-      {renderPage()}
-    </MainLayout>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        {/* Rute default */}
+        <Route index element={<HomePage />} />
+        {/* Render semua rute dari config */}
+        {renderRoutes(navigationRoutes)}
+
+        {/* Fallback route untuk halaman yang tidak ditemukan */}
+        <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+      </Route>
+    </Routes>
   );
 };
 

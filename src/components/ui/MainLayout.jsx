@@ -1,10 +1,12 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Drawer from "devextreme-react/drawer";
 import TreeView from "devextreme-react/tree-view";
 import Toolbar, { Item } from "devextreme-react/toolbar";
 import { navigationRoutes } from "../../config/navigationConfig";
 import RealTimeClock from "./RealTimeClock";
 
+// Fungsi helper untuk merender item menu
 const renderMenuItem = (itemData) => {
   return (
     <div className="menu-item">
@@ -14,70 +16,87 @@ const renderMenuItem = (itemData) => {
   );
 };
 
-const MainLayout = ({ activeMenu, onMenuClick, children, activeMenuId }) => {
+// Fungsi helper rekursif untuk mencari rute berdasarkan path
+const findRouteByPath = (routes, path) => {
+  for (const route of routes) {
+    if (route.path === path) {
+      return route;
+    }
+    if (route.items) {
+      const found = findRouteByPath(route.items, path);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+const MainLayout = () => {
+  // --- STATE & REFS ---
   const [isDrawerPinned, setIsDrawerPinned] = useState(false);
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
   const treeViewRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
 
-  // Combine pinned and hover state untuk menentukan apakah drawer terbuka
+  // --- REACT ROUTER HOOKS ---
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // --- MEMOIZED VALUES ---
+  // Tentukan rute, ID, dan teks menu yang aktif berdasarkan URL saat ini.
+  // useMemo digunakan agar kalkulasi ini tidak berjalan di setiap render.
+  const { activeRoute, activeMenuId, activeMenuText } = useMemo(() => {
+    const route = findRouteByPath(navigationRoutes, location.pathname);
+    return {
+      activeRoute: route,
+      activeMenuId: route ? route.id : null,
+      activeMenuText: route ? route.text : "Dashboard",
+    };
+  }, [location.pathname]);
+
   const isDrawerOpen = isDrawerPinned || isDrawerHovered;
 
+  // --- CALLBACKS ---
+  // Handler untuk klik item di TreeView
   const handleItemClick = useCallback(
     (e) => {
       const node = e.node;
-      // Jika item adalah parent (punya sub-item) dan tidak punya 'component'
-      if (node.children.length > 0 && !e.itemData.component) {
-        // Buka atau tutup node tersebut secara manual
+      // Jika item adalah parent dan tidak punya path, expand/collapse saja
+      if (node.children.length > 0 && !e.itemData.path) {
         const treeViewInstance = treeViewRef.current.instance();
-        if (node.expanded) {
-          treeViewInstance.collapseItem(node.key);
-        } else {
-          treeViewInstance.expandItem(node.key);
-        }
+        treeViewInstance.toggleItemExpansion(node.key);
+        return;
       }
 
-      // Jika item punya 'component', panggil onMenuClick
-      if (e.itemData && e.itemData.component) {
-        onMenuClick(e);
+      // Jika item punya path, navigasi ke path tersebut
+      if (e.itemData?.path) {
+        navigate(e.itemData.path);
       }
     },
-    [onMenuClick]
+    [navigate]
   );
 
-  // Handle mouse enter dengan delay
+  // Handler untuk hover (mouse enter/leave)
   const handleMouseEnter = useCallback(() => {
     if (!isDrawerPinned) {
-      // Clear timeout jika ada
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-      // Set delay kecil agar tidak terlalu sensitive
-      hoverTimeoutRef.current = setTimeout(() => {
-        setIsDrawerHovered(true);
-      }, 100); // 100ms delay
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = setTimeout(() => setIsDrawerHovered(true), 100);
     }
   }, [isDrawerPinned]);
 
-  // Handle mouse leave dengan delay
   const handleMouseLeave = useCallback(() => {
     if (!isDrawerPinned) {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-      // Delay saat leave agar tidak langsung nutup
-      hoverTimeoutRef.current = setTimeout(() => {
-        setIsDrawerHovered(false);
-      }, 200); // 200ms delay
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = setTimeout(
+        () => setIsDrawerHovered(false),
+        200
+      );
     }
   }, [isDrawerPinned]);
 
-  // Cleanup timeout saat component unmount
+  // Cleanup timeout
   React.useEffect(() => {
     return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     };
   }, []);
 
@@ -96,7 +115,7 @@ const MainLayout = ({ activeMenu, onMenuClick, children, activeMenuId }) => {
           }}
           location="before"
         />
-        <Item text={activeMenu} location="before" cssClass="header-title" />
+        <Item text={activeMenuText} location="before" cssClass="header-title" />
         <Item
           render={() => <RealTimeClock />}
           location="after"
@@ -116,7 +135,7 @@ const MainLayout = ({ activeMenu, onMenuClick, children, activeMenuId }) => {
       <Drawer
         opened={isDrawerOpen}
         minSize={80}
-        maxSize={250} // TAMBAHKAN INI agar lebar maksimal konsisten
+        maxSize={250}
         openedStateMode="shrink"
         position="left"
         revealMode="expand"
@@ -132,18 +151,20 @@ const MainLayout = ({ activeMenu, onMenuClick, children, activeMenuId }) => {
               onItemClick={handleItemClick}
               width="100%"
               selectionMode="single"
-              selectByClick={true} // Item akan terseleksi saat diklik
+              selectByClick={true}
               elementAttr={{ class: "panel-list" }}
-              selectNodesRecursive={false} // Jangan seleksi parent saat child diseleksi
               itemRender={renderMenuItem}
-              keyExpr="id" // Beritahu TreeView bahwa 'id' adalah kunci unik
-              displayExpr="text" // Beritahu TreeView untuk menampilkan properti 'text'
-              selectedItemKeys={[activeMenuId]}
+              keyExpr="id"
+              displayExpr="text"
+              selectedItemKeys={activeMenuId ? [activeMenuId] : []}
             />
           </div>
         )}
       >
-        <div className="content-block">{children}</div>
+        <div className="content-block">
+          {/* Outlet akan me-render komponen halaman yang cocok dengan URL */}
+          <Outlet />
+        </div>
       </Drawer>
     </div>
   );
