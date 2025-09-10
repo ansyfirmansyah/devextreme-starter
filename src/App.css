@@ -153,3 +153,9 @@ body,
 .dx-licence-banner {
   display: none !important;
 }
+
+/* --- 9. ADDITIONAL DATAGRID SCROLL FIXES --- */
+/* Fix for potential height calculation issues */
+.dx-datagrid .dx-datagrid-rowsview {
+  overflow: auto !important;
+}

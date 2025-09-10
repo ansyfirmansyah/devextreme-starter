@@ -36,6 +36,7 @@ const SalesForm = () => {
 
   const [formData, setFormData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  console.log(new Date() + ' - formData = ' + formData);
 
   // Tentukan mode form berdasarkan URL
   const isEditMode = !!id; // Jika ada id, berarti mode edit/view

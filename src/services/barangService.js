@@ -1,7 +1,28 @@
 // Service ini spesifik untuk kebutuhan di luar createStore, seperti mengisi dropdown.
 import { createStore } from "devextreme-aspnet-data-nojquery";
+import notify from "devextreme/ui/notify";
+
 import { API_ENDPOINTS } from "../config/apiConfig";
-import { Form } from "devextreme-react";
+
+/**
+ * Store utama untuk operasi CRUD barang.
+ * Digunakan di BarangGrid dan BarangForm.
+ * Gunakan createStore dari devextreme-aspnet-data-nojquery.
+ * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
+ */
+export const barangStore = createStore({
+  // primary key disesuaikan dengan nama primary key di tabel database
+  key: "barang_id",
+  // List API yang digunakan untuk operasi CRUD
+  loadUrl: API_ENDPOINTS.barang.get,
+  insertUrl: API_ENDPOINTS.barang.post,
+  updateUrl: API_ENDPOINTS.barang.put,
+  deleteUrl: API_ENDPOINTS.barang.delete,
+  // Event handler untuk menampilkan notifikasi
+  onInserted: () => notify("Data created successfully", "success", 2000),
+  onUpdated: () => notify("Data updated successfully", "success", 2000),
+  onRemoved: () => notify("Data deleted successfully", "success", 2000),
+});
 
 /**
  * --- KONTRAK API BARU UNTUK BACKEND ---
@@ -22,6 +43,7 @@ export const createParentDataSource = (existingId) => {
   });
 };
 
+// DataSource untuk Master-Detail Grid Outlet
 export const outletDataSource = (masterRawData) => {
   return createStore({
     key: "barango_id",
@@ -33,6 +55,7 @@ export const outletDataSource = (masterRawData) => {
   });
 };
 
+// DataSource untuk Master-Detail Grid Diskon
 export const diskonDataSource = (masterRawData) => {
   return createStore({
     key: "barangd_id",
@@ -43,6 +66,7 @@ export const diskonDataSource = (masterRawData) => {
   });
 };
 
+// DataSource untuk SelectBox Referensi Klasifikasi
 export const refKlasifikasiDataSource = () => {
   return createStore({
     key: "klas_id",
@@ -50,6 +74,7 @@ export const refKlasifikasiDataSource = () => {
   });
 };
 
+// DataSource untuk SelectBox Referensi Outlet
 export const refOutletDataSource = () => {
   return createStore({
     key: "outlet_id",
@@ -57,85 +82,86 @@ export const refOutletDataSource = () => {
   });
 };
 
+// API untuk inisialisasi data di tabel temp (outlet/diskon) saat form dibuka (create, view maupun edit)
 export const initTemp = async (barangId, url) => {
   try {
+    // Gunakan URLSearchParams untuk mengirim data sebagai application/x-www-form-urlencoded
     const payload = new URLSearchParams({
       barang_id: barangId.toString(),
     });
+    // Kirim request POST ke API
     const response = await fetch(url, {
       method: "POST",
       body: payload,
     });
 
+    // Jika respons tidak berhasil (misal, error 404)
     if (!response.ok) {
-      // Jika respons tidak berhasil (misal, error 404)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const responseData = await response.json(); // Parse respons sebagai JSON
+    // Parse respons sebagai JSON
+    const responseData = await response.json();
     return responseData;
   } catch (error) {
-    console.error("Error:", error);
-    throw error; // Teruskan error agar bisa ditangani di pemanggilnya
+    // Teruskan error agar bisa ditangani di pemanggilnya
+    throw error;
   }
 };
 
+// Inisialisasi data di tabel temp outlet
 export const initTempOutlet = async (barangId) => {
   return await initTemp(barangId, API_ENDPOINTS.barang.initTempOutlet);
 };
-
+// Inisialisasi data di tabel temp diskon
 export const initTempDiskon = async (barangId) => {
   return await initTemp(barangId, API_ENDPOINTS.barang.initTempDiskon);
 };
 
+// API untuk menambah atau menghapus data di tabel temp (outlet/diskon)
 export const addDelTemp = async (payload, url, method) => {
   try {
     const response = await fetch(url, {
       method: method,
       body: payload,
     }).catch((error) => {
-      // This block handles network errors (e.g., "Failed to fetch")
-      console.error("Network error:", error);
       throw error;
-      // You can set an error state here to display a message to the user
     });
-    console.error("Response-nya:", JSON.stringify(response));
 
+    // Jika respons tidak berhasil (misal, error 404)
     if (!response.ok) {
-      const responseData = await response.json(); // Parse respons sebagai JSON
-      console.error("Response data:", responseData);
-      // Jika respons tidak berhasil (misal, error 404)
+      // Parse respons sebagai JSON untuk mendapatkan pesan error dari server
+      const responseData = await response.json();
       throw new Error(
         responseData.message || `HTTP error! status: ${response.status}`
       );
     }
 
-    const responseData = await response.json(); // Parse respons sebagai JSON
+    // Parse respons sebagai JSON
+    const responseData = await response.json();
     return responseData;
   } catch (error) {
-    console.error("Error:", error);
-    throw error; // Teruskan error agar bisa ditangani di pemanggilnya
+    throw error;
   }
 };
 
+// Fungsi untuk menambah data di tabel temp outlet
 export const addTempOutlet = async (payload) => {
-  console.log("addTempOutlet payload:", payload);
   return await addDelTemp(payload, API_ENDPOINTS.barang.getTempOutlet, "POST");
 };
-
+// Fungsi untuk menambah data di tabel temp diskon
 export const addTempDiskon = async (payload) => {
   return await addDelTemp(payload, API_ENDPOINTS.barang.getTempDiskon, "POST");
 };
-
+// Fungsi untuk menghapus data di tabel temp outlet
 export const delTempOutlet = async (payload) => {
-  console.log("addTempOutlet payload:", payload);
   return await addDelTemp(
     payload,
     API_ENDPOINTS.barang.getTempOutlet,
     "DELETE"
   );
 };
-
+// Fungsi untuk menghapus data di tabel temp diskon
 export const delTempDiskon = async (payload) => {
   return await addDelTemp(
     payload,
@@ -144,6 +170,7 @@ export const delTempDiskon = async (payload) => {
   );
 };
 
+// DataSource untuk Detail Grid Outlet di form (dari tabel temp)
 export const refDetailOutletDataSource = (tempId) => {
   return createStore({
     key: "barango_id",
@@ -154,6 +181,7 @@ export const refDetailOutletDataSource = (tempId) => {
   });
 };
 
+// DataSource untuk Detail Grid Diskon di form (dari tabel temp)
 export const refDetailDiskonDataSource = (tempId) => {
   return createStore({
     key: "barangd_id",

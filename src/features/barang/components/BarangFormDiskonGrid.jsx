@@ -22,7 +22,6 @@ const BarangFormDiskonGrid = ({ tempId, harga, readOnly }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log('Harga updated:', harga);
     // Lakukan sesuatu ketika harga berubah
   }, [harga]);
 

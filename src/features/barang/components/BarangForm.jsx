@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Form, {
   SimpleItem,
   GroupItem,
@@ -7,46 +13,134 @@ import Form, {
   RangeRule,
   StringLengthRule,
 } from "devextreme-react/form";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { DropDownBox, TreeView } from "devextreme-react";
+import notify from "devextreme/ui/notify";
 
 import FormActions from "../../../components/ui/FormActions";
-import { DropDownBox, TreeView } from "devextreme-react";
-import { refKlasifikasiDataSource } from "../../../services/barangService";
+import {
+  barangStore,
+  initTempDiskon,
+  initTempOutlet,
+  refKlasifikasiDataSource,
+} from "../../../services/barangService";
 import BarangFormOutletGrid from "./BarangFormOutletGrid";
 import BarangFormDiskonGrid from "./BarangFormDiskonGrid";
-import { on } from "devextreme/events";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
-const BarangForm = ({
-  initialData,
-  onSave,
-  onCancel,
-  readOnly = false,
-  onBack,
-}) => {
+// Template data kosong untuk form create
+const newBarangTemplate = {
+  barang_kode: "",
+  barang_nama: "",
+  barang_harga: 0,
+  klas_id: null,
+  temptable_outlet_id: null,
+  temptable_diskon_id: null,
+};
+
+const BarangForm = () => {
   const formRef = useRef(null);
+  const navigate = useNavigate();
+  const { id } = useParams(); // Dapatkan 'id' dari URL jika ada
+  const location = useLocation(); // Untuk memeriksa path saat ini
 
-  // State untuk form data dan DropDownBox klasifikasi
-  const [formData, setFormData] = useState(initialData);
-  // const [selectedValueKlas, setSelectedValueKlas] = useState(null);
+  const [formData, setFormData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isDropDownOpenKlas, setIsDropDownOpenKlas] = useState(false);
-  const [lookupRefKlas, setLookupRefKlas] = useState(null);
 
-  // DataSource untuk klasifikasi
+  // Tentukan mode form berdasarkan URL
+  const isEditMode = !!id; // Jika ada id, berarti mode edit/view
+  // Jika di mode edit tapi bukan di path '/edit', berarti read-only (view mode)
+  const isReadOnly = isEditMode && !location.pathname.endsWith("/edit");
+
+  // useEffect untuk mengambil data jika dalam mode edit/view
   useEffect(() => {
-    // Ambil instance dari data source
-    const ds = refKlasifikasiDataSource();
+    async function initData() {
+      if (isEditMode) {
+        setIsLoading(true);
+        // Ambil data dari store (API) langsung
+        barangStore.byKey(id).then(
+          async (data) => {
+            // init temptable_id dengan Guid baru
+            const temptableOutlet = await initTempOutlet(id);
+            const temptableDiskon = await initTempDiskon(id);
+            // Form menggunakan data yang sudah ditemukan, bukan template kosong
+            setFormData({
+              ...data,
+              temptable_outlet_id:
+                temptableOutlet?.temptable_outlet_id || new Guid(),
+              temptable_diskon_id:
+                temptableDiskon?.temptable_diskon_id || new Guid(),
+            });
+            setIsLoading(false);
+          },
+          (err) => {
+            notify(err?.message || "Failed to load data.", "error", 3000);
+            navigate("/barang");
+            setIsLoading(false);
+          }
+        );
+      } else {
+        // init temptable_id dengan Guid baru
+        const temptableOutlet = await initTempOutlet(0);
+        const temptableDiskon = await initTempDiskon(0);
+        // Set data form ke template baru
+        setFormData({
+          ...newBarangTemplate,
+          temptable_outlet_id:
+            temptableOutlet?.temptable_outlet_id || new Guid(),
+          temptable_diskon_id:
+            temptableDiskon?.temptable_diskon_id || new Guid(),
+        });
+      }
+    }
+    initData();
+  }, [id, isEditMode, navigate]);
 
-    // Load datanya
-    ds.load()
-      .then((data) => {
-        // Simpan hasilnya di state
-        setLookupRefKlas(data);
-      })
-      .catch((error) => {
-        console.error("Gagal memuat data klasifikasi:", error);
+  // Data source untuk dropdown Outlet di form
+  const lookupRefKlas = useMemo(() => refKlasifikasiDataSource(), [id]);
+
+  // Handler untuk kembali ke halaman grid
+  const handleCancel = useCallback(() => navigate("/barang"), [navigate]);
+
+  // Handler untuk submit form
+  const handleSubmit = async (e) => {
+    // Mencegah form me-reload halaman
+    e.preventDefault();
+    // untuk mode readonly, jangan lakukan apa-apa
+    if (isReadOnly) return;
+
+    const formInstance = formRef.current.instance();
+    const validationResult = formInstance.validate();
+
+    // Validasi manual untuk field yang menggunakan render
+    const customValidationErrors = [];
+
+    if (!formData.klas_id) {
+      customValidationErrors.push({
+        field: "klas_id",
+        message: "Klasifikasi harus dipilih",
       });
+    }
 
-    // Array dependensi kosong '[]' memastikan ini hanya berjalan sekali
-  }, []);
+    // Jika valid, panggil onSave dengan data dari form
+    if (validationResult.isValid && customValidationErrors.length === 0) {
+      try {
+        const dataToSave = formInstance.option("formData");
+        if (isEditMode) {
+          // update data via store (API)
+          await barangStore.update(id, dataToSave);
+        } else {
+          // insert data via store (API)
+          await barangStore.insert(dataToSave);
+        }
+        // Setelah sukses, kembali ke halaman grid
+        handleCancel();
+      } catch (err) {
+        notify(err?.message || "Failed to save data.", "error", 3000);
+      }
+    }
+  };
 
   // Handler saat item di TreeView klasifikasi dipilih
   const onTreeViewKlasSelectionChanged = useCallback((e) => {
@@ -65,7 +159,7 @@ const BarangForm = ({
 
     // Tutup dropdown
     setIsDropDownOpenKlas(false);
-  }, []); // Dependency tidak perlu karena setFormData stabil
+  }, [formData]); // Dependency tidak perlu karena setFormData stabil
 
   // Render konten TreeView untuk DropDownBox klasifikasi
   const contentRenderKlas = useCallback(() => {
@@ -81,7 +175,7 @@ const BarangForm = ({
         onItemSelectionChanged={onTreeViewKlasSelectionChanged}
         onContentReady={(e) => {
           // Sinkronisasi sekarang membaca dari formData
-          const currentValue = formData.klas_id;
+          const currentValue = formData?.klas_id;
           if (currentValue) {
             e.component.selectItem(currentValue);
           } else {
@@ -90,34 +184,13 @@ const BarangForm = ({
         }}
       />
     );
-  }, [lookupRefKlas]);
+  }, [lookupRefKlas, formData]);
 
-  // Handler untuk submit form
-  const handleSubmit = (e) => {
-    // Mencegah form me-reload halaman
-    e.preventDefault();
-    // untuk mode readonly, jangan lakukan apa-apa
-    if (readOnly) return;
-
-    // Validasi form secara manual
-    const formInstance = formRef.current.instance();
-    const validationResult = formInstance.validate();
-
-    // Validasi manual untuk field yang menggunakan render
-    const customValidationErrors = [];
-
-    if (!formData.klas_id) {
-      customValidationErrors.push({
-        field: "klas_id",
-        message: "Klasifikasi harus dipilih",
-      });
-    }
-
-    // Jika valid, panggil onSave dengan data dari form
-    if (validationResult.isValid && customValidationErrors.length === 0) {
-      onSave(formInstance.option("formData"));
-    }
-  };
+  // !!PENTING!! Jika ada kondisi yang akan return component, taruh di paling bawah sebelum return asli-nya
+  // supaya tidak terjadi "Hook Count Mismatch"
+  if (isLoading || !formData) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="form-container">
@@ -130,7 +203,7 @@ const BarangForm = ({
           colCount={2}
           labelLocation="top"
           showColonAfterLabel={true}
-          readOnly={readOnly}
+          readOnly={isReadOnly}
         >
           <GroupItem caption="Barang Details">
             <SimpleItem dataField="barang_kode" label={{ text: "Kode" }}>
@@ -174,7 +247,7 @@ const BarangForm = ({
               render={() => (
                 <DropDownBox
                   // value sekarang membaca langsung dari formData
-                  readOnly={readOnly}
+                  readOnly={isReadOnly}
                   value={formData.klas_id}
                   opened={isDropDownOpenKlas}
                   onOptionChanged={(e) => {
@@ -206,18 +279,22 @@ const BarangForm = ({
           <GroupItem caption="Outlet Information">
             <BarangFormOutletGrid
               tempId={formData.temptable_outlet_id}
-              readOnly={readOnly}
+              readOnly={isReadOnly}
             />
           </GroupItem>
           <GroupItem caption="Diskon Information">
             <BarangFormDiskonGrid
               tempId={formData.temptable_diskon_id}
               harga={formData.barang_harga}
-              readOnly={readOnly}
+              readOnly={isReadOnly}
             />
           </GroupItem>
         </Form>
-        <FormActions readOnly={readOnly} onCancel={onCancel} onBack={onBack} />
+        <FormActions
+          readOnly={isReadOnly}
+          onCancel={handleCancel}
+          onBack={handleCancel}
+        />
       </form>
     </div>
   );
