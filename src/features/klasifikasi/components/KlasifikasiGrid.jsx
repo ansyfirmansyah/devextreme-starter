@@ -15,9 +15,9 @@ import { confirm } from "devextreme/ui/dialog";
 import DataSource from "devextreme/data/data_source";
 
 // 2. Perbaiki path impor dengan menambahkan ekstensi file
-import PageHeader from "../../../components/ui/GridHeader.jsx";
-import ActionCell from "../../../components/ui/ActionCell.jsx";
-import { klasifikasiStore } from "../../../services/klasifikasiService.js";
+import PageHeader from "../../../components/ui/GridHeader";
+import ActionCell from "../../../components/ui/ActionCell";
+import { klasifikasiStore } from "../../../services/klasifikasiService";
 
 const KlasifikasiGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja

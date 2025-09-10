@@ -1,57 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DataGrid, {
   Column,
   Paging,
   FilterRow,
   SearchPanel,
-  RequiredRule,
   HeaderFilter,
   Pager,
 } from "devextreme-react/data-grid";
-import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
-
-import { API_ENDPOINTS } from "../../../config/apiConfig";
+import { confirm } from "devextreme/ui/dialog";
+import DataSource from "devextreme/data/data_source";
 
 import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
+import { salesStore } from "../../../services/salesService";
 
-// Buat store untuk DataGrid dan ekspor untuk digunakan di SalesPage
-export const salesStore = createStore({
-  // primary key disesuaikan dengan nama primary key di tabel database
-  key: "sales_id",
-  // List API yang digunakan untuk operasi CRUD
-  loadUrl: API_ENDPOINTS.sales.get,
-  insertUrl: API_ENDPOINTS.sales.post,
-  updateUrl: API_ENDPOINTS.sales.put,
-  deleteUrl: API_ENDPOINTS.sales.delete,
-  // Event handler untuk menampilkan notifikasi
-  onInserted: () => notify("Sales created successfully", "success", 2000),
-  onUpdated: () => notify("Sales updated successfully", "success", 2000),
-  onRemoved: () => notify("Sales deleted successfully", "success", 2000),
-});
+const SalesGrid = () => {
+  // Gunakan useState untuk membuat DataSource sekali saja
+  // Ini mencegah pembuatan ulang DataSource pada setiap render
+  // yang bisa menyebabkan masalah pada DataGrid
+  const [salesDataSource] = useState(() => new DataSource(salesStore));
+  const navigate = useNavigate();
 
-const SalesGrid = ({
-  dataSource,
-  onAddClick,
-  onViewClick,
-  onEditClick,
-  onDeleteClick,
-}) => {
-  // Render cell untuk kolom aksi (view, edit, delete)
+  /* Handler untuk tombol Add, View, Edit, Delete */
+  const handleAdd = () => navigate("new");
+  const handleView = (id) => navigate(`${id}`);
+  const handleEdit = (id) => navigate(`${id}/edit`);
+  const handleDelete = async (id) => {
+    const result = await confirm(
+      "Are you sure you want to delete this data?",
+      "Confirm Deletion"
+    );
+    if (result) {
+      try {
+        await salesStore.remove(id);
+        await salesDataSource.reload();
+      } catch (err) {
+        notify(err?.message || "Failed to delete data.", "error", 3000);
+      }
+    }
+  };
+
+  // Render fungsi khusus untuk kolom Actions
   const renderActionCell = ({ data }) => {
     return (
       <ActionCell
-        onView={() => onViewClick(data.sales_id)}
-        onEdit={() => onEditClick(data.sales_id)}
-        onDelete={() => onDeleteClick(data.sales_id)}
+        onView={() => handleView(data.sales_id)}
+        onEdit={() => handleEdit(data.sales_id)}
+        onDelete={() => handleDelete(data.sales_id)}
       />
     );
   };
 
   return (
     <DataGrid
-      dataSource={dataSource}
+      dataSource={salesDataSource}
       height="100%"
       showBorders={true}
       rowAlternationEnabled={true}
@@ -61,7 +65,7 @@ const SalesGrid = ({
       <PageHeader
         title="Sales"
         buttonText="Add Sales"
-        onButtonClick={onAddClick}
+        onButtonClick={handleAdd}
       />
       <SearchPanel visible={true} width={240} placeholder="Search..." />
       <FilterRow visible={true} />

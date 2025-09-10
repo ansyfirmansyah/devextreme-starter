@@ -121,7 +121,6 @@ const KlasifikasiForm = () => {
             <SimpleItem dataField="klas_kode" label={{ text: "Kode" }}>
               <RequiredRule />
               <StringLengthRule max={10} message="Kode max 10 karakter" />
-              <RequiredRule />
             </SimpleItem>
             <SimpleItem
               dataField="klas_nama"
@@ -129,7 +128,6 @@ const KlasifikasiForm = () => {
             >
               <RequiredRule />
               <StringLengthRule max={100} message="Nama max 100 karakter" />
-              <RequiredRule />
             </SimpleItem>
           </GroupItem>
           <GroupItem caption="Parent Information">

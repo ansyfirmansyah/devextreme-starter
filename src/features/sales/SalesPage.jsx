@@ -1,134 +1,22 @@
-import React, { useState, useCallback } from "react";
-import notify from "devextreme/ui/notify";
-import {confirm} from "devextreme/ui/dialog";
-import DataSource from 'devextreme/data/data_source';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import SalesGrid, { salesStore } from "./components/SalesGrid";
+import SalesGrid from "./components/SalesGrid";
 import SalesForm from "./components/SalesForm";
 
-// Template data kosong untuk form create
-const newSalesTemplate = {
-  sales_kode: "",
-  sales_nama: "",
-  outlet_id: null,
-};
-
+/**
+ * Komponen ini sekarang bertindak sebagai "Router" untuk fitur Sales.
+ * Ia tidak lagi mengelola state 'viewMode' atau 'activeFormData'.
+ * Tugasnya hanya mendefinisikan rute mana yang akan me-render Grid dan rute mana yang akan me-render Form.
+ */
 const SalesPage = () => {
-  // Buat dataSource yang selalu ada (tidak di-reset)
-  const [salesDataSource] = useState(() => new DataSource(salesStore));
-  // State untuk mode tampilan: 'grid', 'form', 'view'
-  const [viewMode, setViewMode] = useState("grid");
-  // State untuk data yang sedang aktif di form (bisa null)
-  const [activeFormData, setActiveFormData] = useState(null);
-  // State untuk loading saat fetch data tunggal
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Handler untuk simpan data dari form (create/update)
-  const handleSave = useCallback(async (data) => {
-    try {
-      // Dapatkan store dari dataSource yang selalu ada
-      const store = salesDataSource.store();
-
-      if (data.sales_id) { // Mode Update
-        await store.update(data.sales_id, data);
-      } else { // Mode Create
-        await store.insert(data);
-      }
-
-      // Grid akan refresh otomatis karena kembali ke mode grid
-      setViewMode('grid');
-    } catch (err) {
-      notify(err?.message || 'Failed to save sales data.', 'error', 3000);
-    }
-  }, [salesDataSource]); // Hanya perlu salesDataSource
-
-  // Handler untuk tombol Add
-  const handleAddClick = useCallback(() => {
-    // Set data form ke template baru
-    setActiveFormData({ ...newSalesTemplate });
-    setViewMode("form");
-  }, []);
-
-  // Handler untuk tombol View
-  const handleViewClick = useCallback(async (id) => {
-    try {
-      setIsLoading(true);
-      // Gunakan store untuk fetch by key
-      const data = await salesStore.byKey(id);
-      // Form menggunakan data yang sudah ditemukan, bukan template kosong
-      setActiveFormData(data);
-      setViewMode("view");
-    } catch (err) {
-      console.error('Load data error:', err);
-      notify(err?.message || 'Failed to load sales data.', 'error', 3000);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [salesDataSource]);
-
-  // Handler untuk tombol Edit
-  const handleEditClick = useCallback(async (id) => {
-    try {
-      setIsLoading(true);
-      // Gunakan store untuk fetch by key
-      const data = await salesStore.byKey(id);
-      // Form menggunakan data yang sudah ditemukan, bukan template kosong
-      setActiveFormData(data);
-      setViewMode("form");
-    } catch (err) {
-      console.error('Load data error:', err);
-      notify(err?.message || 'Failed to load sales data.', 'error', 3000);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Handler untuk tombol Delete
-  const handleDeleteClick = useCallback(async (id) => {
-    const result = await confirm('Are you sure you want to delete this sales data?', 'Confirm Deletion');
-    if (result) {
-      try {
-        // Dapatkan store dari dataSource yang selalu ada
-        const store = salesDataSource.store();
-        await store.remove(id);
-        // Refresh data di grid
-        await salesDataSource.reload();
-      } catch (err) {
-        console.error(err);
-        notify(err?.message || 'Failed to delete sales data.', 'error', 3000);
-      }
-    }
-  }, [salesDataSource]);
-
-  // Handler untuk batal di form (kembali ke grid)
-  const handleCancel = useCallback(() => setViewMode("grid"), []);
-
-  // Render loading spinner jika sedang loading data
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  // Render form jika mode-nya 'form' atau 'view'
-  if (viewMode === 'form' || viewMode === 'view') {
-    return <SalesForm
-      initialData={activeFormData}
-      onSave={handleSave}
-      onCancel={handleCancel}
-      readOnly={viewMode === 'view'}
-      onBack={handleCancel}
-    />;
-  }
-
   return (
-    // Render grid jika mode-nya 'grid'
-    <SalesGrid
-      dataSource={salesDataSource}
-      onAddClick={handleAddClick}
-      onViewClick={handleViewClick}
-      onEditClick={handleEditClick}
-      onDeleteClick={handleDeleteClick}
-    />
+    <Routes>
+      <Route index element={<SalesGrid />} />
+      <Route path="new" element={<SalesForm />} />
+      <Route path=":id" element={<SalesForm />} />
+      <Route path=":id/edit" element={<SalesForm />} />
+    </Routes>
   );
 };
 

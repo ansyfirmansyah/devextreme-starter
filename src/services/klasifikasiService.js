@@ -1,4 +1,4 @@
-// Service ini spesifik untuk kebutuhan di luar createStore, seperti mengisi dropdown.
+// Service ini untuk integrasi dengan API baik itu createStore maupun data untuk dropdown.
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
 
