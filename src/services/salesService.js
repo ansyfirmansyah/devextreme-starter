@@ -3,6 +3,7 @@ import { createStore } from 'devextreme-aspnet-data-nojquery';
 import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from '../config/apiConfig';
+import { createCrudStore } from './serviceHelper';
 
 /**
  * Store utama untuk operasi CRUD sales.
@@ -10,19 +11,11 @@ import { API_ENDPOINTS } from '../config/apiConfig';
  * Gunakan createStore dari devextreme-aspnet-data-nojquery.
  * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
  */
-export const salesStore = createStore({
-  // primary key disesuaikan dengan nama primary key di tabel database
-  key: "sales_id",
-  // List API yang digunakan untuk operasi CRUD
-  loadUrl: API_ENDPOINTS.sales.get,
-  insertUrl: API_ENDPOINTS.sales.post,
-  updateUrl: API_ENDPOINTS.sales.put,
-  deleteUrl: API_ENDPOINTS.sales.delete,
-  // Event handler untuk menampilkan notifikasi
-  onInserted: () => notify("Sales created successfully", "success", 2000),
-  onUpdated: () => notify("Sales updated successfully", "success", 2000),
-  onRemoved: () => notify("Sales deleted successfully", "success", 2000),
-});
+export const klasifikasiStore = createCrudStore(
+  "sales_id",
+  API_ENDPOINTS.sales,
+  "Sales"
+);
 
 /**
  * --- KONTRAK API BARU UNTUK BACKEND ---

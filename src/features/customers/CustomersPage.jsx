@@ -1,3 +1,4 @@
+/* Ini contoh page dengan mock data dan tidak perlu consume API */
 import React, { useState, useCallback, useEffect } from "react";
 import * as customerService from "../../services/customerService";
 import { confirm } from "devextreme/ui/dialog";

@@ -3,6 +3,7 @@ import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from "../config/apiConfig";
+import { createCrudStore } from "./serviceHelper";
 
 /**
  * Store utama untuk operasi CRUD barang.
@@ -10,19 +11,11 @@ import { API_ENDPOINTS } from "../config/apiConfig";
  * Gunakan createStore dari devextreme-aspnet-data-nojquery.
  * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
  */
-export const barangStore = createStore({
-  // primary key disesuaikan dengan nama primary key di tabel database
-  key: "barang_id",
-  // List API yang digunakan untuk operasi CRUD
-  loadUrl: API_ENDPOINTS.barang.get,
-  insertUrl: API_ENDPOINTS.barang.post,
-  updateUrl: API_ENDPOINTS.barang.put,
-  deleteUrl: API_ENDPOINTS.barang.delete,
-  // Event handler untuk menampilkan notifikasi
-  onInserted: () => notify("Data created successfully", "success", 2000),
-  onUpdated: () => notify("Data updated successfully", "success", 2000),
-  onRemoved: () => notify("Data deleted successfully", "success", 2000),
-});
+export const klasifikasiStore = createCrudStore(
+  "barang_id",
+  API_ENDPOINTS.klasifikasi,
+  "Barang"
+);
 
 /**
  * --- KONTRAK API BARU UNTUK BACKEND ---

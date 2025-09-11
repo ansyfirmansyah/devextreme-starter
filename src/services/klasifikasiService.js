@@ -3,6 +3,7 @@ import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from "../config/apiConfig";
+import { createCrudStore } from "./serviceHelper";
 
 /**
  * Store utama untuk operasi CRUD klasifikasi.
@@ -10,16 +11,11 @@ import { API_ENDPOINTS } from "../config/apiConfig";
  * Gunakan createStore dari devextreme-aspnet-data-nojquery.
  * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
  */
-export const klasifikasiStore = createStore({
-  key: "klas_id",
-  loadUrl: API_ENDPOINTS.klasifikasi.get,
-  insertUrl: API_ENDPOINTS.klasifikasi.post,
-  updateUrl: API_ENDPOINTS.klasifikasi.put,
-  deleteUrl: API_ENDPOINTS.klasifikasi.delete,
-  onInserted: () => notify("Data created successfully", "success", 2000),
-  onUpdated: () => notify("Data updated successfully", "success", 2000),
-  onRemoved: () => notify("Data deleted successfully", "success", 2000),
-});
+export const klasifikasiStore = createCrudStore(
+  "klas_id",
+  API_ENDPOINTS.klasifikasi,
+  "Klasifikasi"
+);
 
 /**
  * --- KONTRAK API BARU UNTUK BACKEND ---

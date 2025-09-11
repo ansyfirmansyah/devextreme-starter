@@ -3,27 +3,13 @@ import { createStore } from "devextreme-aspnet-data-nojquery";
 import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from "../config/apiConfig";
+import { createCrudStore } from "./serviceHelper";
 
-export const outletStore = createStore({
-  key: "outlet_id", // Primary Key, pastikan sama dengan model di backend
-  loadUrl: API_ENDPOINTS.outlets.get,
-  insertUrl: API_ENDPOINTS.outlets.post,
-  updateUrl: API_ENDPOINTS.outlets.put,
-  deleteUrl: API_ENDPOINTS.outlets.delete,
-
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil ditambah
-  onInserted: () => {
-    notify("Outlet created successfully", "success", 2000);
-  },
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil diubah
-  onUpdated: () => {
-    notify("Outlet updated successfully", "success", 2000);
-  },
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil dihapus
-  onRemoved: () => {
-    notify("Outlet deleted successfully", "success", 2000);
-  },
-});
+export const klasifikasiStore = createCrudStore(
+  "outlet_id",
+  API_ENDPOINTS.outlets,
+  "Outlet"
+);
 
 export const salesByOutletStore = (outletId) => {
   return createStore({
