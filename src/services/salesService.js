@@ -1,6 +1,5 @@
 // Service ini untuk integrasi dengan API baik itu createStore maupun data untuk dropdown.
 import { createStore } from 'devextreme-aspnet-data-nojquery';
-import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from '../config/apiConfig';
 import { createCrudStore } from './serviceHelper';
@@ -11,7 +10,7 @@ import { createCrudStore } from './serviceHelper';
  * Gunakan createStore dari devextreme-aspnet-data-nojquery.
  * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
  */
-export const klasifikasiStore = createCrudStore(
+export const salesStore = createCrudStore(
   "sales_id",
   API_ENDPOINTS.sales,
   "Sales"

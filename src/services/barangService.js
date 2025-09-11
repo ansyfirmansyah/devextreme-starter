@@ -11,9 +11,9 @@ import { createCrudStore } from "./serviceHelper";
  * Gunakan createStore dari devextreme-aspnet-data-nojquery.
  * Pastikan API_ENDPOINTS diatur dengan benar di config/apiConfig.js
  */
-export const klasifikasiStore = createCrudStore(
+export const barangStore = createCrudStore(
   "barang_id",
-  API_ENDPOINTS.klasifikasi,
+  API_ENDPOINTS.barang,
   "Barang"
 );
 

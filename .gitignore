@@ -26,3 +26,4 @@ dist-ssr
 package-lock.json
 crud-devextreme-react.zip
 crud-devextreme-react-rev1.zip
+pnpm-lock.yaml

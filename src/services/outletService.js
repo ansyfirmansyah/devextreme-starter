@@ -5,7 +5,7 @@ import notify from "devextreme/ui/notify";
 import { API_ENDPOINTS } from "../config/apiConfig";
 import { createCrudStore } from "./serviceHelper";
 
-export const klasifikasiStore = createCrudStore(
+export const outletStore = createCrudStore(
   "outlet_id",
   API_ENDPOINTS.outlets,
   "Outlet"
