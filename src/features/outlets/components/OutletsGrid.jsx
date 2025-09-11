@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import DataGrid, {
   Column,
   Paging,
@@ -12,59 +12,33 @@ import DataGrid, {
   Button as GridButton,
   HeaderFilter,
   MasterDetail,
+  StringLengthRule,
 } from "devextreme-react/data-grid";
-// 1. Ganti impor ODataStore dengan createStore
-import { createStore } from "devextreme-aspnet-data-nojquery";
+import DataSource from "devextreme/data/data_source";
+
 import SalesDetailGrid from "./SalesDetailGrid";
-import { API_ENDPOINTS } from "../../../config/apiConfig";
-import notify from "devextreme/ui/notify";
-
-// 2. Konfigurasi dataSource menggunakan createStore
-// URL ini adalah placeholder. Ganti dengan endpoint API .NET MVC Anda.
-const dataSource = createStore({
-  key: "outlet_id", // Primary Key, pastikan sama dengan model di backend
-  loadUrl: API_ENDPOINTS.outlets.get,
-  insertUrl: API_ENDPOINTS.outlets.post,
-  updateUrl: API_ENDPOINTS.outlets.put,
-  deleteUrl: API_ENDPOINTS.outlets.delete,
-
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil ditambah
-  onInserted: () => {
-    notify("Outlet created successfully", "success", 2000);
-  },
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil diubah
-  onUpdated: () => {
-    notify("Outlet updated successfully", "success", 2000);
-  },
-  // Event ini akan dipanggil setelah server mengkonfirmasi data berhasil dihapus
-  onRemoved: () => {
-    notify("Outlet deleted successfully", "success", 2000);
-  },
-});
+import { outletStore } from "../../../services/outletService";
+import { GridHeaderWithAddInMenu } from "../../../components/ui/GridHeader";
 
 const OutletsGrid = ({ onViewClick }) => {
+  // init data source sekali saja karena untuk kebutuhan datagrid
+  // sehingga bisa cek kondisi terkini, misal: halaman yang saat ini dibuka
+  const [outletDataSource] = useState(() => new DataSource(outletStore));
+
   const onRowExpanding = useCallback((e) => {
     e.component.collapseAll(-1);
   }, []);
 
   return (
     <DataGrid
-      dataSource={dataSource} // Gunakan dataSource yang baru
+      dataSource={outletDataSource}
       height="100%"
       showBorders={true}
       rowAlternationEnabled={true}
       remoteOperations={true} // Flag untuk memberitahu grid agar semua operasi (pagination, filter, sorting) dilakukan di server.
       onRowExpanding={onRowExpanding}
     >
-      <Toolbar>
-        <Item location="before">
-          <h2 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 500 }}>
-            Outlets
-          </h2>
-        </Item>
-        <Item name="addRowButton" showText="inMenu" />
-        <Item location="after" name="searchPanel" />
-      </Toolbar>
+      <GridHeaderWithAddInMenu title="Outlets" />
       <SearchPanel visible={true} width={240} placeholder="Search..." />
       <FilterRow visible={true} />
       <HeaderFilter visible={true} />
@@ -99,9 +73,11 @@ const OutletsGrid = ({ onViewClick }) => {
       {/* 3. Sesuaikan kolom agar cocok dengan model data Outlets Anda */}
       <Column dataField="outlet_kode" caption="Kode Outlet">
         <RequiredRule />
+        <StringLengthRule max={10} message="Kode max 10 karakter" />
       </Column>
       <Column dataField="outlet_nama" caption="Nama Outlet">
         <RequiredRule />
+        <StringLengthRule max={100} message="Nama max 10 karakter" />
       </Column>
       <Column type="buttons" caption="Actions" width={110}>
         <GridButton

@@ -1,27 +1,14 @@
 import React from "react";
 import DataGrid, { Column, Paging } from "devextreme-react/data-grid";
-import { createStore } from "devextreme-aspnet-data-nojquery";
-import { API_ENDPOINTS } from "../../../config/apiConfig";
+import { salesByOutletStore } from "../../../services/outletService";
 
 // Komponen ini menerima 'outletData' dari master grid sebagai prop
 const SalesDetailGrid = ({ data: masterRawData }) => {
-
-  // Buat data source baru untuk detail grid ini.
-  // Perhatikan bagaimana kita menambahkan 'outletId' sebagai parameter tambahan.
-  const salesDataSource = createStore({
-    key: "sales_id",
-    loadUrl: API_ENDPOINTS.outlets.getSales,
-    // Tambahkan parameter kustom yang akan selalu dikirim saat load data
-    loadParams: {
-      outletId: masterRawData.key, // 'outletData.key' berisi ID dari baris master (outlet)
-    },
-  });
-
   return (
     <div style={{ padding: "0px 20px" }}>
       <h4>Daftar Sales untuk Outlet: {masterRawData.data.outlet_kode}</h4>
       <DataGrid
-        dataSource={salesDataSource}
+        dataSource={salesByOutletStore(masterRawData.key)}
         showBorders={true}
         columnAutoWidth={true}
         remoteOperations={true}

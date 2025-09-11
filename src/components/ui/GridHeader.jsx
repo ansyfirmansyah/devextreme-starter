@@ -20,12 +20,13 @@ const GridHeader = ({ title, buttonText, onButtonClick }) => {
   );
 };
 
-export const GridHeaderWithoutText = ({ title }) => {
+export const GridHeaderWithAddInMenu = ({ title }) => {
   return (
     <Toolbar>
       <Item location="before">
         <h2 className={styles.gridHeader}>{title}</h2>
       </Item>
+      <Item name="addRowButton" showText="inMenu" />
       <Item location="after" name="searchPanel" />
     </Toolbar>
   );

@@ -1,11 +1,14 @@
+/* Ini contoh Page dengan Form yang auto dari devextreme (contoh form yang custom ada di page lain) */
 import React, { useCallback, useState } from "react";
-// Halaman ini hanya bertindak sebagai container untuk grid.
-// Tidak ada state, tidak ada useEffect, tidak ada handler. Sangat bersih.
-import OutletsGrid from "./components/OutletsGrid";
 import { Popup } from "devextreme-react/popup";
-import Form, { SimpleItem, GroupItem } from "devextreme-react/form";
+import Form, {
+  SimpleItem,
+} from "devextreme-react/form";
+
+import OutletsGrid from "./components/OutletsGrid";
 
 const OutletsPage = () => {
+  // state untuk view mode
   const [isViewPopupVisible, setIsViewPopupVisible] = useState(false);
   const [viewingOutlet, setViewingOutlet] = useState(null);
 
@@ -29,20 +32,22 @@ const OutletsPage = () => {
         dragEnabled={false}
         closeOnOutsideClick={true}
         showTitle={true}
-        title="View Outlet Details"
+        title="Outlet Info"
         width={700}
         height={250}
       >
-        {/* Di dalam popup, kita render Form yang read-only */}
+        {/* Ini untuk render form khusus view, untuk create dan edit sudah auto dibuat datagrid */}
         <Form
           formData={viewingOutlet}
-          readOnly={true}
+          readOnly={true} // selalu true karena khusus view
           labelLocation="top"
           colCount={2}
         >
-          {/* Definisikan field yang ingin ditampilkan */}
-          <SimpleItem dataField="outlet_kode" caption="Kode Outlet" />
-          <SimpleItem dataField="outlet_nama" caption="Nama Outlet" />
+          {/* Definisikan field yang ingin ditampilkan ketika view */}
+          <SimpleItem dataField="outlet_kode" label={{ text: "Kode Outlet" }}>
+          </SimpleItem>
+          <SimpleItem dataField="outlet_nama" label={{ text: "Nama Outlet" }}>
+          </SimpleItem>
         </Form>
       </Popup>
     </>
