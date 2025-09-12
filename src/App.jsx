@@ -6,6 +6,12 @@ import { Routes, Route } from "react-router-dom";
 
 // Impor tema DevExtreme dan CSS khusus
 import "devextreme/dist/css/dx.light.css";
+// CSS untuk Analytics Core (wajib)
+import '@devexpress/analytics-core/dist/css/dx-analytics.common.css';
+import '@devexpress/analytics-core/dist/css/dx-analytics.light.css';
+// CSS spesifik untuk Web Document Viewer (wajib)
+import 'devexpress-reporting/dist/css/dx-webdocumentviewer.css';
+// CSS custom
 import "./index.css";
 import "./App.css";
 

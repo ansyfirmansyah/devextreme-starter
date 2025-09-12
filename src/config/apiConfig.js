@@ -45,4 +45,11 @@ export const API_ENDPOINTS = {
     getTempDiskon: `${API_BASE_URL}/barang/detail/diskon`,
     getTempOutlet: `${API_BASE_URL}/barang/detail/outlet`,
   },
+  penjualan: {
+    get: `${API_BASE_URL}/penjualan/get`,
+    post: `${API_BASE_URL}/penjualan/post`,
+    put: `${API_BASE_URL}/penjualan/put`,
+    delete: `${API_BASE_URL}/penjualan/delete`,
+    refKode: `${API_BASE_URL}/penjualan/ref/kode`,
+  }
 };

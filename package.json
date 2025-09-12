@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@devexpress/analytics-core": "^25.1.4",
+    "devexpress-reporting": "^25.1.4",
+    "devexpress-reporting-react": "^25.1.4",
     "devextreme": "^25.1.4",
     "devextreme-aspnet-data-nojquery": "^5.1.0",
     "devextreme-react": "^25.1.4",

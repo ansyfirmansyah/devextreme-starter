@@ -13,6 +13,8 @@ import {
 import SalesPage from "../features/sales/SalesPage";
 import KlasifikasiPage from "../features/klasifikasi/KlasifikasiPage";
 import BarangPage from "../features/barang/BarangPage";
+import StrukPenjualanPage from "../features/reports/struk/StrukPenjualanPage";
+import SampleReport from "../features/reports/struk/SampleReport";
 
 // 1. Ubah struktur menjadi tree. Gunakan properti 'items' untuk sub-menu.
 export const navigationRoutes = [
@@ -67,17 +69,17 @@ export const navigationRoutes = [
       // Ini adalah sub-menunya
       {
         id: 9991,
-        text: "Sales Report",
-        icon: "money",
-        path: "/reports/sales",
-        component: SalesReportPage,
+        text: "Sample",
+        icon: "box",
+        path: "/reports/sample",
+        component: SampleReport,
       },
       {
         id: 9992,
-        text: "Stock Report",
-        icon: "box",
-        path: "/reports/stock",
-        component: StockReportPage,
+        text: "Struk Penjualan",
+        icon: "money",
+        path: "/reports/struk-penjualan",
+        component: StrukPenjualanPage,
       },
     ],
   },
