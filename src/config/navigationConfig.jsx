@@ -14,7 +14,7 @@ import SalesPage from "../features/sales/SalesPage";
 import KlasifikasiPage from "../features/klasifikasi/KlasifikasiPage";
 import BarangPage from "../features/barang/BarangPage";
 import StrukPenjualanPage from "../features/reports/struk/StrukPenjualanPage";
-import SampleReport from "../features/reports/struk/SampleReport";
+import OutletSummaryPage from "../features/reports/struk/OutletSummaryPage";
 
 // 1. Ubah struktur menjadi tree. Gunakan properti 'items' untuk sub-menu.
 export const navigationRoutes = [
@@ -27,9 +27,9 @@ export const navigationRoutes = [
   },
   {
     id: 1,
-    text: "Customers",
-    icon: "group",
-    path: "/customers",
+    text: "Sample Page",
+    icon: "file",
+    path: "/sample",
     component: CustomersPage,
   },
   {
@@ -42,7 +42,7 @@ export const navigationRoutes = [
   {
     id: 3,
     text: "Sales",
-    icon: "user",
+    icon: "group",
     path: "/sales",
     component: SalesPage,
   },
@@ -63,23 +63,23 @@ export const navigationRoutes = [
   {
     id: 999,
     text: "Reports", // Menu ini tidak punya 'component', hanya sebagai folder
-    icon: "doc",
+    icon: "print",
     expanded: false, // Kita bisa set defaultnya tertutup
     items: [
       // Ini adalah sub-menunya
       {
         id: 9991,
-        text: "Sample",
-        icon: "box",
-        path: "/reports/sample",
-        component: SampleReport,
-      },
-      {
-        id: 9992,
         text: "Struk Penjualan",
         icon: "money",
         path: "/reports/struk-penjualan",
         component: StrukPenjualanPage,
+      },
+            {
+        id: 9992,
+        text: "Outlet Summary",
+        icon: "money",
+        path: "/reports/outlet-summary",
+        component: OutletSummaryPage,
       },
     ],
   },

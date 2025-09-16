@@ -5,30 +5,25 @@ import ReportViewer, {
 import { Button, SelectBox } from "devextreme-react";
 import { useState } from "react";
 import { useCallback } from "react";
+import { refKodeOutletDataSource, refKodePenjualanDataSource } from "../../../services/penjualanService";
+import { useMemo } from "react";
 
-const host = "http://localhost:5085/"; // Hapus slash (/) di akhir
-const reportBaseName = "ProductReport";
+const host = import.meta.env.VITE_REPORTING_BASE_URL;
+const reportBaseName = "OutletSummaryReport";
 const invokeAction = "DXXRDV";
 
-const categories = [
-  { id: 0, name: '--- All ---' },
-  { id: 1, name: "Beverages" },
-  { id: 2, name: "Condiments" },
-  { id: 3, name: "Produce" },
-];
-
-const SampleReport = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories[0].id
-  );
+const OutletSummaryPage = () => {
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [activeReportUrl, setActiveReportUrl] = useState("");
+
+  const kodePenjualanDataSource = useMemo(() => refKodeOutletDataSource());
 
   const handleCategoryChange = useCallback((e) => {
     setSelectedCategoryId(e.value);
   }, []);
 
   const handlePreviewClick = () => {
-    const newUrl = `${reportBaseName}?pCategoryID=${selectedCategoryId}`;
+    const newUrl = `${reportBaseName}?outletKode=${selectedCategoryId}`;
     setActiveReportUrl(newUrl);
   };
 
@@ -36,11 +31,11 @@ const SampleReport = () => {
     <>
       <div className="content">
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <label>Select a Category:</label>
+          <label>Select a Transaction:</label>
           <SelectBox
-            dataSource={categories}
-            valueExpr="id"
-            displayExpr="name"
+            dataSource={kodePenjualanDataSource}
+            valueExpr="outlet_kode"
+            displayExpr="display"
             value={selectedCategoryId}
             onValueChanged={handleCategoryChange}
             width={250}
@@ -51,6 +46,7 @@ const SampleReport = () => {
             stylingMode="contained"
             onClick={handlePreviewClick}
             className="preview-button"
+            disabled={selectedCategoryId == ""}
           />
         </div>
       </div>
@@ -66,4 +62,4 @@ const SampleReport = () => {
   );
 };
 
-export default SampleReport;
+export default OutletSummaryPage;

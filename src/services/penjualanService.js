@@ -9,3 +9,10 @@ export const refKodePenjualanDataSource = () => {
     loadUrl: API_ENDPOINTS.penjualan.refKode,
   });
 };
+
+export const refKodeOutletDataSource = () => {
+  return createStore({
+    key: "outlet_kode",
+    loadUrl: API_ENDPOINTS.outlets.refKode,
+  });
+};

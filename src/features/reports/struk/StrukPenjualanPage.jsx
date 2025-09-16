@@ -8,12 +8,12 @@ import { useCallback } from "react";
 import { refKodePenjualanDataSource } from "../../../services/penjualanService";
 import { useMemo } from "react";
 
-const host = "http://localhost:5085/"; // Hapus slash (/) di akhir
+const host = import.meta.env.VITE_REPORTING_BASE_URL;
 const reportBaseName = "StrukPenjualanReport";
 const invokeAction = "DXXRDV";
 
 const StrukPenjualanPage = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [activeReportUrl, setActiveReportUrl] = useState("");
 
   const kodePenjualanDataSource = useMemo(() => refKodePenjualanDataSource());
@@ -46,7 +46,7 @@ const StrukPenjualanPage = () => {
             stylingMode="contained"
             onClick={handlePreviewClick}
             className="preview-button"
-            disabled={!selectedCategoryId || selectedCategoryId == ''}
+            disabled={!selectedCategoryId || selectedCategoryId == ""}
           />
         </div>
       </div>

@@ -14,7 +14,6 @@ const klasifikasiData = [
 
 // Ini adalah komponen editor kustom kita
 const TreeListEditor = (props) => {
-  console.log("PROPS YANG DITERIMA EDITOR:", props); // Debugging line
   // Ekstrak value dan onValueChanged dari props.editorOptions
   const { value, onValueChanged } = props.editorOptions;
   const [isOpened, setIsOpened] = useState(false);
@@ -22,14 +21,12 @@ const TreeListEditor = (props) => {
   // Handler saat item di TreeList dipilih
   const handleSelectionChanged = (e) => {
     const selectedId = e.selectedRowKeys[0];
-    console.log("Selected ID:", selectedId); // Debugging line
     // onValueChanged(selectedId); // Kirim nilai baru ke Form
     setIsOpened(false); // Tutup dropdown
   };
 
   // Fungsi untuk render TreeList
   const renderTreeList = () => {
-    // console.log("Render TreeList dipanggil!"); // Ini akan terpanggil sekarang
     return (
       <TreeList
         dataSource={klasifikasiData}
