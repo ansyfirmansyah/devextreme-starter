@@ -1,12 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import SelectBox from "devextreme-react/select-box";
 import Button from "devextreme-react/button";
-import DataGrid, {
-  Column,
-  Editing,
-  Pager,
-  Paging,
-} from "devextreme-react/data-grid";
 import notify from "devextreme/ui/notify";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import {
@@ -16,7 +10,18 @@ import {
   refBarangDiskonDataSource,
   refDetailJualDataSource,
 } from "../../../services/penjualanService";
-import { NumberBox } from "devextreme-react";
+import DataGrid, {
+  Column,
+  Paging,
+  Selection,
+  FilterRow,
+  SearchPanel,
+  HeaderFilter,
+  Pager,
+  MasterDetail,
+  Editing,
+} from "devextreme-react/data-grid";
+import { NumberBox, Popup, TextBox } from "devextreme-react";
 
 const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
   // Dropdown
@@ -27,7 +32,12 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
 
   const [currentQty, setCurrentQty] = useState(null);
   const [currentHarga, setCurrentHarga] = useState(null);
+  const [currentBarangDisplay, setCurrentBarangDisplay] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Popup
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [tempSelectedRowKey, setTempSelectedRowKey] = useState(null);
 
   // Get List Barang
   useEffect(() => {
@@ -59,6 +69,31 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
         console.error("Gagal memuat data diskon:", error);
       });
   }, [selectedBarangId, currentQty]);
+
+  // --- HANDLER POP UP ---
+  const handleOpenPopup = () => {
+    if (!outletId) {
+      notify("Harap pilih outlet terlebih dahulu!", "error", 2000);
+      return; // Stop eksekusi jika outlet belum dipilih
+    }
+
+    // Jika lolos validasi, buka popup
+    setTempSelectedRowKey(selectedBarangId); // Set pilihan awal di grid sama dengan yg sudah terpilih
+    setIsPopupVisible(true);
+  };
+
+  // --- HANDLER SELECTED POP UP ---
+  const handleSelectAndClose = () => {
+    const selectedData = lookupRefBarang.find(
+      (item) => item.barang_id === tempSelectedRowKey
+    );
+    if (selectedData) {
+      setCurrentBarangDisplay(selectedData.barang_nama);
+      setSelectedBarangId(selectedData.barang_id);
+      setCurrentHarga(selectedData.barang_harga);
+    }
+    setIsPopupVisible(false);
+  };
 
   // --- HANDLER ADD DENGAN API ---
   const handleAdd = useCallback(async () => {
@@ -116,21 +151,77 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
       {isLoading && <LoadingSpinner />}
 
       {!readOnly && (
-        <div style={{ display: "flex", gap: "10px", alignItems:"end" }}>
-          <SelectBox
+        <div style={{ display: "flex", gap: "10px", alignItems: "end" }}>
+          {/* START BARANG PICKER */}
+          <TextBox
             label="Barang"
-            dataSource={lookupRefBarang}
-            valueExpr="barang_id"
-            displayExpr="display"
-            placeholder="Pilih Barang..."
-            value={selectedBarangId}
-            onItemClick={(e) => {
-              setSelectedBarangId(e.itemData.barang_id);
-              setCurrentHarga(e.itemData.barang_harga);
-            }}
-            width={300}
             labelMode="outside"
+            value={currentBarangDisplay} // Tampilkan nama barang
+            readOnly={true}
+            placeholder="Pilih Barang..."
+            width={300}
           />
+          <Button
+            icon="search"
+            onClick={handleOpenPopup}
+            style={{ marginLeft: "8px" }}
+          />
+          <Popup
+            visible={isPopupVisible}
+            onHiding={() => setIsPopupVisible(false)}
+            dragEnabled={false}
+            closeOnOutsideClick={true}
+            showTitle={true}
+            title="Pilih Barang"
+            width={800}
+            height={500}
+          >
+            <DataGrid
+              dataSource={lookupRefBarang}
+              keyExpr="barang_id"
+              hoverStateEnabled={true}
+              selectedRowKeys={[tempSelectedRowKey]} // Gunakan state sementara
+              onSelectionChanged={(e) => {
+                // Hanya update state sementara saat user klik baris
+                setTempSelectedRowKey(e.selectedRowKeys[0]);
+              }}
+              onRowDblClick={handleSelectAndClose} // Opsi: double click untuk langsung memilih
+            >
+              <Selection mode="single" />
+              <Paging defaultPageSize={10} />
+
+              <Column dataField="barang_kode" caption="Kode Barang" />
+              <Column dataField="display" caption="Nama Barang" />
+              <Column
+                dataField="barang_harga"
+                caption="Harga"
+                format={"#,##0.##"}
+              />
+            </DataGrid>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingTop: "20px",
+              }}
+            >
+              <Button
+                text="Batal"
+                onClick={() => setIsPopupVisible(false)}
+                type="normal"
+              />
+              <Button
+                text="Pilih"
+                onClick={handleSelectAndClose}
+                type="default"
+                style={{ marginLeft: "10px" }}
+                disabled={!tempSelectedRowKey} // Tombol "Pilih" disable jika belum ada yang dipilih
+              />
+            </div>
+          </Popup>
+          {/* END BARANG PICKER */}
+
           <NumberBox
             value={currentHarga}
             label="Harga"
@@ -203,7 +294,7 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
         <Column dataField="juald_disk" caption="Diskon" format={"#,##0.##"} />
         <Column
           calculateCellValue={(rowData) =>
-            (rowData.juald_qty * rowData.juald_harga) - rowData.juald_disk
+            rowData.juald_qty * rowData.juald_harga - rowData.juald_disk
           }
           dataType="number"
           caption="Total"
