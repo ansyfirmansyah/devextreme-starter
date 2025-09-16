@@ -51,6 +51,13 @@ export const API_ENDPOINTS = {
     post: `${API_BASE_URL}/penjualan/post`,
     put: `${API_BASE_URL}/penjualan/put`,
     delete: `${API_BASE_URL}/penjualan/delete`,
+    refOutlet: `${API_BASE_URL}/penjualan/ref/outlet`,
+    refSales: `${API_BASE_URL}/penjualan/ref/sales`,
+    refBarang: `${API_BASE_URL}/penjualan/ref/barang`,
+    refBarangDiskon: `${API_BASE_URL}/penjualan/ref/barang-diskon`,
     refKode: `${API_BASE_URL}/penjualan/ref/kode`,
-  }
+    detailJual: `${API_BASE_URL}/penjualan/summary/jual-detail`,
+    initTempDetailJual: `${API_BASE_URL}/penjualan/detail/init/jual-detail`,
+    getTempDetailJual: `${API_BASE_URL}/penjualan/detail/jual-detail`,
+  },
 };
