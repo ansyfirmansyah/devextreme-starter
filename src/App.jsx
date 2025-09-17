@@ -4,17 +4,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-// Impor tema DevExtreme dan CSS khusus
-import "devextreme/dist/css/dx.light.css";
-// CSS untuk Analytics Core (wajib)
-import '@devexpress/analytics-core/dist/css/dx-analytics.common.css';
-import '@devexpress/analytics-core/dist/css/dx-analytics.light.css';
-// CSS spesifik untuk Web Document Viewer (wajib)
-import 'devexpress-reporting/dist/css/dx-webdocumentviewer.css';
-// CSS custom
-import "./index.css";
-import "./App.css";
-
 // Layout utama yang akan membungkus semua halaman
 import MainLayout from "./components/ui/MainLayout";
 // Impor konfigurasi navigasi
@@ -45,18 +34,18 @@ const App = () => {
   };
 
   return (
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        {/* Rute default */}
-        <Route index element={<HomePage />} />
-        {/* Render semua rute dari config */}
-        {renderRoutes(navigationRoutes)}
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        {/* Fallback route untuk halaman yang tidak ditemukan */}
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          {/* Rute default */}
+          <Route index element={<HomePage />} />
+          {/* Render semua rute dari config */}
+          {renderRoutes(navigationRoutes)}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          {/* Fallback route untuk halaman yang tidak ditemukan */}
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
   );
 };
 
