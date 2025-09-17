@@ -26,7 +26,7 @@ export const refKodePenjualanDataSource = () => {
 export const refKodeOutletDataSource = () => {
   return createStore({
     key: "outlet_kode",
-    loadUrl: API_ENDPOINTS.outlets.refKode,
+    loadUrl: API_ENDPOINTS.outlets.refReportKode,
   });
 };
 

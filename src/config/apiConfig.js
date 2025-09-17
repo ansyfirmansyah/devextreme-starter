@@ -17,7 +17,7 @@ export const API_ENDPOINTS = {
     getSales: `${API_BASE_URL}/outlets/getSalesForOutlet`,
     // Endpoint untuk referensi di form lain
     lookup: `${API_BASE_URL}/outlets/lookup`,
-    refKode: `${API_BASE_URL}/outlets/ref/kode`,
+    refReportKode: `${API_BASE_URL}/outlets/ref/report/kode`,
   },
   sales: {
     get: `${API_BASE_URL}/sales/get`,
