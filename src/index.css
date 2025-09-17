@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+/* 1. Sembunyikan panah submenu dengan membuatnya berukuran nol, bukan menghilangkannya. Ini cara paling aman. */
+.drawer-collapsed .dx-treeview-toggle-item-visibility {
+  font-size: 0 !important;
+  width: 0 !important;
+  /* Hapus juga margin bawaan DevExtreme agar tidak memakan tempat */
+  margin-inline-end: 0 !important;
+}
+
+/* 2. Setelah panah hilang, pusatkan semua yang tersisa (yaitu ikon kita) di tengah. */
+.drawer-collapsed .dx-treeview-item-content {
+  justify-content: center !important;
+}
+
+/* Styling untuk baris header DataGrid agar lebih menawan */
+.dx-datagrid-headers .dx-header-row {
+  background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+  border-bottom: 2px solid #e2e8f0; /* Tailwind: border-b-2 border-slate-200 */
+}
+
+/* Paksa semua header kolom di DataGrid untuk rata tengah */
+.dx-datagrid-headers .dx-header-row > td {
+  text-align: center !important;
+}
+
+/* Styling untuk baris header DataGrid agar lebih menawan */
+.dx-datagrid-headers .dx-header-row {
+  background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9); /* Tailwind: from-slate-50 to-slate-100 */
+  border-bottom: 2px solid #e2e8f0; /* Tailwind: border-b-2 border-slate-200 */
+}
+
+/* Bikin garis antar baris di grid lebih tipis dan modern */
+.dx-datagrid-rowsview .dx-row > .dx-td {
+  border-bottom: 1px solid #e5e7eb; /* Warna Tailwind: gray-200 */
+}
+
+/* Kustomisasi warna untuk baris alternatif (Zebra Stripes) */
+.dx-datagrid-rowsview .dx-row.dx-row-alt > td {
+  background-color: #f1f5f9 !important; /* Tailwind: bg-slate-100 */
+}

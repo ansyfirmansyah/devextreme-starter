@@ -16,6 +16,7 @@ import { confirm } from "devextreme/ui/dialog";
 import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import { penjualanStore } from "../../../services/penjualanService";
+import { renderDateCell, renderHeader } from "../../../components/ui/GridCellRenderers";
 
 const PenjualanGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -55,41 +56,62 @@ const PenjualanGrid = () => {
   };
 
   return (
-    <DataGrid
-      dataSource={penjualanDataSource}
-      height="100%"
-      showBorders={true}
-      rowAlternationEnabled={true}
-      remoteOperations={true}
-    >
-      // Header grid dengan tombol Add
-      <PageHeader
-        title="Penjualan"
-        buttonText="Add Penjualan"
-        onButtonClick={handleAdd}
-      />
-      <SearchPanel visible={true} width={240} placeholder="Search..." />
-      <FilterRow visible={true} />
-      <HeaderFilter visible={true} />
-      <Paging defaultPageSize={10} />
-      <Pager
-        showPageSizeSelector={true}
-        allowedPageSizes={[5, 10, 20]}
-        showInfo={true}
-      />
-      <Column dataField="jualh_kode" caption="Kode"></Column>
-      <Column dataField="jualh_date" caption="Tanggal Penjualan" dataType="date" format="dd-MMM-yyyy"></Column>
-      <Column dataField="outlet_display" caption="Outlet"></Column>
-      <Column dataField="sales_display" caption="Sales"></Column>
-      <Column
-        caption="Actions"
-        width={120}
-        alignment="center"
-        cellRender={renderActionCell}
-        allowFiltering={false}
-        allowSorting={false}
-      />
-    </DataGrid>
+    <div className="bg-white rounded-lg shadow-sm">
+      <DataGrid
+        dataSource={penjualanDataSource}
+        height="100%"
+        showBorders={false}
+        rowAlternationEnabled={true}
+        remoteOperations={true}
+      >
+        // Header grid dengan tombol Add
+        <PageHeader
+          title="Penjualan"
+          buttonText="Add Penjualan"
+          onButtonClick={handleAdd}
+        />
+        <SearchPanel visible={true} width={240} placeholder="Search..." />
+        <FilterRow visible={true} />
+        <HeaderFilter visible={true} />
+        <Paging defaultPageSize={10} />
+        <Pager
+          showPageSizeSelector={true}
+          allowedPageSizes={[5, 10, 20]}
+          showInfo={true}
+        />
+        <Column
+          dataField="jualh_kode"
+          caption="Kode"
+          headerCellRender={() => renderHeader("Kode")}
+        ></Column>
+        <Column
+          dataField="jualh_date"
+          caption="Tanggal Penjualan"
+          dataType="date"
+          cellRender={renderDateCell}
+          headerCellRender={() => renderHeader("Tanggal Penjualan")}
+        ></Column>
+        <Column
+          dataField="outlet_display"
+          caption="Outlet"
+          headerCellRender={() => renderHeader("Outlet")}
+        ></Column>
+        <Column
+          dataField="sales_display"
+          caption="Sales"
+          headerCellRender={() => renderHeader("Sales")}
+        ></Column>
+        <Column
+          caption="Actions"
+          width={120}
+          alignment="center"
+          cellRender={renderActionCell}
+          allowFiltering={false}
+          allowSorting={false}
+          headerCellRender={() => renderHeader("Actions")}
+        />
+      </DataGrid>
+    </div>
   );
 };
 
