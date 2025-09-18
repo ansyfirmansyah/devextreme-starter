@@ -56,41 +56,43 @@ const BarangGrid = () => {
   };
 
   return (
-    <DataGrid
-      dataSource={barangDataSource}
-      height="100%"
-      showBorders={true}
-      rowAlternationEnabled={true}
-      remoteOperations={true}
-    >
-      // Header grid dengan tombol Add
-      <PageHeader
-        title="Master Barang"
-        buttonText="Add Barang"
-        onButtonClick={handleAdd}
-      />
-      <SearchPanel visible={true} width={240} placeholder="Search..." />
-      <FilterRow visible={true} />
-      <HeaderFilter visible={true} />
-      <Paging defaultPageSize={10} />
-      <Pager
-        showPageSizeSelector={true}
-        allowedPageSizes={[5, 10, 20]}
-        showInfo={true}
-      />
-      <Column dataField="barang_kode" caption="Kode"></Column>
-      <Column dataField="barang_nama" caption="Nama Barang"></Column>
-      <Column dataField="klasifikasi_display" caption="Klasifikasi"></Column>
-      <Column
-        caption="Actions"
-        width={120}
-        alignment="center"
-        cellRender={renderActionCell}
-        allowFiltering={false}
-        allowSorting={false}
-      />
-      <MasterDetail enabled={true} component={DetailGrid} />
-    </DataGrid>
+    <div className="bg-white rounded-lg shadow-sm">
+      <DataGrid
+        dataSource={barangDataSource}
+        height="100%"
+        showBorders={true}
+        rowAlternationEnabled={true}
+        remoteOperations={true}
+      >
+        // Header grid dengan tombol Add
+        <PageHeader
+          title="Master Barang"
+          buttonText="Add Barang"
+          onButtonClick={handleAdd}
+        />
+        <SearchPanel visible={true} width={240} placeholder="Search..." />
+        <FilterRow visible={true} />
+        <HeaderFilter visible={true} />
+        <Paging defaultPageSize={10} />
+        <Pager
+          showPageSizeSelector={true}
+          allowedPageSizes={[5, 10, 20]}
+          showInfo={true}
+        />
+        <Column dataField="barang_kode" caption="Kode"></Column>
+        <Column dataField="barang_nama" caption="Nama Barang"></Column>
+        <Column dataField="klasifikasi_display" caption="Klasifikasi"></Column>
+        <Column
+          caption="Actions"
+          width={120}
+          alignment="center"
+          cellRender={renderActionCell}
+          allowFiltering={false}
+          allowSorting={false}
+        />
+        <MasterDetail enabled={true} component={DetailGrid} />
+      </DataGrid>
+    </div>
   );
 };
 

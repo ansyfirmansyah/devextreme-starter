@@ -42,10 +42,11 @@ const OutletSummaryPage = () => {
           />
           <Button
             text="Preview Report"
-            type="default"
+            type="normal"
             stylingMode="contained"
             onClick={handlePreviewClick}
             className="preview-button"
+            elementAttr={{class : "grid-add-button"}}
             disabled={selectedCategoryId == ""}
           />
         </div>

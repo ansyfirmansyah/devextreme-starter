@@ -59,44 +59,45 @@ const KlasifikasiGrid = () => {
   };
 
   return (
-    <TreeList
-      dataSource={klasifikasiDataSource}
-      height="100%"
-      showBorders={true}
-      rowAlternationEnabled={true}
-      remoteOperations={true}
-      keyExpr="klas_id"
-      parentIdExpr="klas_parent_id"
-      rootValue={null}
-    >
-      <PageHeader
-        title="Klasifikasi Management"
-        buttonText="Add Klasifikasi"
-        onButtonClick={handleAdd}
-      />
-      <SearchPanel visible={true} width={240} placeholder="Search..." />
-      <FilterRow visible={true} />
-      <HeaderFilter visible={true} />
-      <Paging defaultPageSize={10} />
-      <Pager
-        showPageSizeSelector={true}
-        allowedPageSizes={[5, 10, 20]}
-        showInfo={true}
-      />
-      <Column dataField="klas_kode" caption="Kode Klasifikasi"></Column>
-      <Column dataField="klas_nama" caption="Nama Klasifikasi"></Column>
-      <Column dataField="klas_parent_display" caption="Induk"></Column>
-      <Column
-        caption="Actions"
-        width={120}
-        alignment="center"
-        cellRender={renderActionCell}
-        allowFiltering={false}
-        allowSorting={false}
-      />
-    </TreeList>
+    <div className="bg-white rounded-lg shadow-sm">
+      <TreeList
+        dataSource={klasifikasiDataSource}
+        height="100%"
+        showBorders={true}
+        rowAlternationEnabled={true}
+        remoteOperations={true}
+        keyExpr="klas_id"
+        parentIdExpr="klas_parent_id"
+        rootValue={null}
+      >
+        <PageHeader
+          title="Klasifikasi Management"
+          buttonText="Add Klasifikasi"
+          onButtonClick={handleAdd}
+        />
+        <SearchPanel visible={true} width={240} placeholder="Search..." />
+        <FilterRow visible={true} />
+        <HeaderFilter visible={true} />
+        <Paging defaultPageSize={10} />
+        <Pager
+          showPageSizeSelector={true}
+          allowedPageSizes={[5, 10, 20]}
+          showInfo={true}
+        />
+        <Column dataField="klas_kode" caption="Kode Klasifikasi"></Column>
+        <Column dataField="klas_nama" caption="Nama Klasifikasi"></Column>
+        <Column dataField="klas_parent_display" caption="Induk"></Column>
+        <Column
+          caption="Actions"
+          width={120}
+          alignment="center"
+          cellRender={renderActionCell}
+          allowFiltering={false}
+          allowSorting={false}
+        />
+      </TreeList>
+    </div>
   );
 };
 
 export default KlasifikasiGrid;
-

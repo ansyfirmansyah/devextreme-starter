@@ -46,6 +46,7 @@ const StrukPenjualanPage = () => {
             stylingMode="contained"
             onClick={handlePreviewClick}
             className="preview-button"
+            elementAttr={{ class: "grid-add-button" }}
             disabled={!selectedCategoryId || selectedCategoryId == ""}
           />
         </div>

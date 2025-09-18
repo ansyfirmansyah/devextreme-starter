@@ -1,16 +1,46 @@
-/* --- GENERAL & FONT SETUP --- */
-html,
-body,
-#root {
+/**
+  File ini bertanggung jawab atas "tampilan dan nuansa" dari kerangka utama aplikasi, 
+  memisahkannya dari aturan global yang lebih mendasar
+
+**/
+
+/* --- MAIN APP LAYOUT CONTAINER --- */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- TOOLBAR STYLING (CARA YANG BENAR) --- */
+/* Targetkan class .dx-toolbar yang ada di dalam .app-container */
+.app-container > .dx-toolbar {
+  flex-shrink: 0;
+  background-color: #1d4ed8; /* Kode warna untuk bi-blue-700 */
+  color: white;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  padding: 2px;
+}
+
+/* --- DRAWER & CONTENT AREA --- */
+.app-container > .dx-drawer {
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.dx-drawer-content {
+  padding: 0 !important;
+  /* Beri warna background fallback jika ada yg aneh */
+  background-color: #f1f5f9; /* bi-slate-100 */
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  /* Aturan ini mencegah scrollbar ganda di level body, sebaiknya dipertahankan */
-  overflow: hidden; 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  /* Background bisa diatur di MainLayout, tapi tidak masalah jika di sini */
-  background-color: #f4f5f7;
+}
+
+.content-block {
+  padding: 24px;
+  flex-grow: 1; /* Biarkan konten mengisi ruang yang tersedia */
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 /* --- HIDE DEVEXPRESS LICENSE BANNER --- */
@@ -23,4 +53,12 @@ body,
 /* Ini adalah perbaikan spesifik untuk komponen DataGrid, simpan saja untuk keamanan */
 .dx-datagrid .dx-datagrid-rowsview {
   overflow: auto !important;
+}
+
+/* Pastikan form container tidak memakan seluruh tinggi layar */
+.form-container {
+  padding: 24px;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }

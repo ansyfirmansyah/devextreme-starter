@@ -54,40 +54,42 @@ const SalesGrid = () => {
   };
 
   return (
-    <DataGrid
-      dataSource={salesDataSource}
-      height="100%"
-      showBorders={true}
-      rowAlternationEnabled={true}
-      remoteOperations={true}
-    >
-      // Header grid dengan tombol Add
-      <PageHeader
-        title="Sales"
-        buttonText="Add Sales"
-        onButtonClick={handleAdd}
-      />
-      <SearchPanel visible={true} width={240} placeholder="Search..." />
-      <FilterRow visible={true} />
-      <HeaderFilter visible={true} />
-      <Paging defaultPageSize={10} />
-      <Pager
-        showPageSizeSelector={true}
-        allowedPageSizes={[5, 10, 20]}
-        showInfo={true}
-      />
-      <Column dataField="sales_kode" caption="Kode Sales"></Column>
-      <Column dataField="sales_nama" caption="Nama Sales"></Column>
-      <Column dataField="outlet_display" caption="Outlet"></Column>
-      <Column
-        caption="Actions"
-        width={120}
-        alignment="center"
-        cellRender={renderActionCell}
-        allowFiltering={false}
-        allowSorting={false}
-      />
-    </DataGrid>
+    <div className="bg-white rounded-lg shadow-sm">
+      <DataGrid
+        dataSource={salesDataSource}
+        height="100%"
+        showBorders={true}
+        rowAlternationEnabled={true}
+        remoteOperations={true}
+      >
+        // Header grid dengan tombol Add
+        <PageHeader
+          title="Sales"
+          buttonText="Add Sales"
+          onButtonClick={handleAdd}
+        />
+        <SearchPanel visible={true} width={240} placeholder="Search..." />
+        <FilterRow visible={true} />
+        <HeaderFilter visible={true} />
+        <Paging defaultPageSize={10} />
+        <Pager
+          showPageSizeSelector={true}
+          allowedPageSizes={[5, 10, 20]}
+          showInfo={true}
+        />
+        <Column dataField="sales_kode" caption="Kode Sales"></Column>
+        <Column dataField="sales_nama" caption="Nama Sales"></Column>
+        <Column dataField="outlet_display" caption="Outlet"></Column>
+        <Column
+          caption="Actions"
+          width={120}
+          alignment="center"
+          cellRender={renderActionCell}
+          allowFiltering={false}
+          allowSorting={false}
+        />
+      </DataGrid>
+    </div>
   );
 };
 
