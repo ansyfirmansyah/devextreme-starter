@@ -14,14 +14,15 @@ import DataGrid, {
   Column,
   Paging,
   Selection,
-  FilterRow,
-  SearchPanel,
-  HeaderFilter,
-  Pager,
-  MasterDetail,
   Editing,
+  Button as GridButton,
+  Pager,
 } from "devextreme-react/data-grid";
 import { NumberBox, Popup, TextBox } from "devextreme-react";
+import {
+  DeleteIcon,
+  SearchIcon,
+} from "../../../components/icon/actionCellIcon";
 
 const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
   // Dropdown
@@ -42,10 +43,8 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
   // Get List Barang
   useEffect(() => {
     const ds = refBarangDataSource(outletId || 0);
-    // Load datanya
     ds.load()
       .then((data) => {
-        // Simpan hasilnya di state
         setLookupRefBarang(data);
       })
       .catch((error) => {
@@ -59,10 +58,8 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
       selectedBarangId || 0,
       currentQty || 0
     );
-    // Load datanya
     ds.load()
       .then((data) => {
-        // Simpan hasilnya di state
         setLookupRefBarangDiskon(data);
       })
       .catch((error) => {
@@ -97,7 +94,6 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
 
   // --- HANDLER ADD DENGAN API ---
   const handleAdd = useCallback(async () => {
-    console.log("cek >> " + selectedBarangDiskonId);
     if (!selectedBarangId || !currentQty || !currentHarga) return;
     setIsLoading(true);
     try {
@@ -114,36 +110,46 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
       setSelectedBarangDiskonId(null);
       setCurrentHarga(null);
       setCurrentQty(null);
+      setCurrentBarangDisplay(""); // Reset display nama barang juga
     } catch (error) {
       console.error("Gagal menyimpan data ke server:", error);
       notify(error?.message || "Gagal menyimpan ke database!", "error", 2000);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedBarangId, currentHarga, currentQty, selectedBarangDiskonId]);
+  }, [
+    selectedBarangId,
+    currentHarga,
+    currentQty,
+    selectedBarangDiskonId,
+    tempId,
+  ]);
 
   // --- HANDLER DELETE DENGAN API ---
-  const handleDelete = useCallback(async (e) => {
-    // 🛡️ 1. Ambil data baris yang akan dihapus
-    const detailToDelete = e.data;
-    // 2. Batalkan aksi default DataGrid. Kita akan kontrol 100%
-    e.cancel = true;
-    if (!detailToDelete) return;
-    setIsLoading(true);
-    try {
-      // 3. Panggil API untuk menghapus data dari database
-      const payload = new URLSearchParams({
-        key: detailToDelete.juald_id.toString(),
-        temptable_detail_id: tempId.toString(),
-      });
-      await delTempDetail(payload);
-      notify("Detail berhasil dihapus!", "success", 1500);
-    } catch (error) {
-      notify(error?.message || "Gagal menyimpan ke database!", "error", 2000);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const handleDelete = useCallback(
+    async (e) => {
+      // 🛡️ 1. Ambil data baris yang akan dihapus
+      const detailToDelete = e.data;
+      // 2. Batalkan aksi default DataGrid. Kita akan kontrol 100%
+      e.cancel = true;
+      if (!detailToDelete) return;
+      setIsLoading(true);
+      try {
+        // 3. Panggil API untuk menghapus data dari database
+        const payload = new URLSearchParams({
+          key: detailToDelete.juald_id.toString(),
+          temptable_detail_id: tempId.toString(),
+        });
+        await delTempDetail(payload);
+        notify("Detail berhasil dihapus!", "success", 1500);
+      } catch (error) {
+        notify(error?.message || "Gagal menyimpan ke database!", "error", 2000);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [tempId]
+  );
 
   return (
     <div>
@@ -151,21 +157,30 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
       {isLoading && <LoadingSpinner />}
 
       {!readOnly && (
-        <div style={{ display: "flex", gap: "10px", alignItems: "end" }}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-2 items-end p-4 mb-4 border rounded-md bg-bi-slate-50 border-bi-slate-200">
           {/* START BARANG PICKER */}
-          <TextBox
-            label="Barang"
-            labelMode="outside"
-            value={currentBarangDisplay} // Tampilkan nama barang
-            readOnly={true}
-            placeholder="Pilih Barang..."
-            width={300}
-          />
-          <Button
-            icon="search"
-            onClick={handleOpenPopup}
-            style={{ marginLeft: "8px" }}
-          />
+          <div className="col-span-12 sm:col-span-3">
+            <label className="text-sm font-medium text-gray-700">Barang</label>
+            <div className="flex items-center">
+              <TextBox
+                value={currentBarangDisplay}
+                readOnly={true}
+                placeholder="Pilih Barang..."
+                stylingMode="outlined"
+                elementAttr={{
+                  class: "rounded-r-none",
+                }}
+              />
+              {/* Tombol Search sekarang di-style langsung di sini */}
+              <Button
+                onClick={handleOpenPopup}
+                disabled={!outletId}
+                elementAttr={{ class: "form-search-button" }}
+              >
+                <SearchIcon />
+              </Button>
+            </div>
+          </div>
           <Popup
             visible={isPopupVisible}
             onHiding={() => setIsPopupVisible(false)}
@@ -222,55 +237,67 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
           </Popup>
           {/* END BARANG PICKER */}
 
-          <NumberBox
-            value={currentHarga}
-            label="Harga"
-            min={0}
-            width={100}
-            format={"#,##0.##"}
-            labelMode="outside"
-            disabled={true}
-          />
-          <NumberBox
-            value={currentQty}
-            label="Qty"
-            min={0}
-            onValueChange={(e) => setCurrentQty(e)}
-            width={100}
-            format={"#"}
-            labelMode="outside"
-          />
-          <SelectBox
-            label="Diskon yang tersedia"
-            dataSource={lookupRefBarangDiskon}
-            valueExpr="barangd_id"
-            displayExpr="display"
-            placeholder="Pilih Diskon..."
-            value={selectedBarangDiskonId}
-            onItemClick={(e) => {
-              console.log("cek pilih diskon");
-              setSelectedBarangDiskonId(e.itemData.barangd_id);
-            }}
-            width={300}
-            disabled={!selectedBarangId || !currentQty}
-            labelMode="outside"
-          />
-          <Button
-            text="Add Detail"
-            icon="add"
-            type="default"
-            onClick={handleAdd}
-            disabled={
-              !selectedBarangId || !currentHarga || !currentQty || isLoading
-            }
-          />
+          {/* --- HARGA --- */}
+          <div className="col-span-6 sm:col-span-2">
+            <label className="text-sm font-medium text-gray-700">Harga</label>
+            <NumberBox
+              value={currentHarga}
+              min={0}
+              format={"#,##0.##"}
+              stylingMode="outlined"
+              readOnly={true}
+            />
+          </div>
+
+          {/* --- QTY --- */}
+          <div className="col-span-6 sm:col-span-1">
+            <label className="text-sm font-medium text-gray-700">Qty</label>
+            <NumberBox
+              value={currentQty}
+              min={0}
+              onValueChange={setCurrentQty}
+              format={"#"}
+              stylingMode="outlined"
+            />
+          </div>
+
+          {/* --- DISKON --- */}
+          <div className="col-span-12 sm:col-span-4">
+            <label className="text-sm font-medium text-gray-700">
+              Diskon yang tersedia
+            </label>
+            <SelectBox
+              dataSource={lookupRefBarangDiskon}
+              valueExpr="barangd_id"
+              displayExpr="display"
+              placeholder="Pilih Diskon..."
+              value={selectedBarangDiskonId}
+              onValueChange={(e) => setSelectedBarangDiskonId(e)}
+              stylingMode="outlined"
+              disabled={!selectedBarangId || !currentQty}
+            />
+          </div>
+
+          {/* --- ADD BUTTON --- */}
+          <div className="col-span-12 sm:col-span-2">
+            <Button
+              text="Add Detail"
+              icon="add"
+              type="default"
+              onClick={handleAdd}
+              disabled={
+                !selectedBarangId || !currentHarga || !currentQty || isLoading
+              }
+              elementAttr={{ class: "grid-add-button w-full" }}
+            />
+          </div>
         </div>
       )}
       <DataGrid
         dataSource={refDetailJualDataSource(tempId)}
         showBorders={true}
-        style={{ marginTop: "10px" }}
-        onRowRemoving={handleDelete} // <-- Handler Delete di sini
+        onRowRemoving={handleDelete}
+        className="mt-4"
       >
         <Paging defaultPageSize={5} />
         <Pager
@@ -278,7 +305,6 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
           allowedPageSizes={[5, 10, 20]}
           showInfo={true}
         />
-
         <Column dataField="barang_kode" caption="Kode" />
         <Column dataField="barang_nama" caption="Nama Barang" />
         <Column dataField="juald_qty" caption="Qty" />
@@ -300,13 +326,20 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
           caption="Total"
           format={"#,##0.##"}
         />
+        <Editing mode="row" allowDeleting={true} useIcons={false} />
         {!readOnly && (
-          <Editing
-            mode="row"
-            allowDeleting={true}
-            useIcons={true}
-            confirmDelete={true}
-          />
+          <Column type="buttons" width={80}>
+            <GridButton
+              name="delete"
+              render={() => (
+                <div className="flex items-center justify-center h-full">
+                  <div className="p-1 text-red-500 rounded-full cursor-pointer hover:bg-red-100 hover:text-red-700">
+                    <DeleteIcon />
+                  </div>
+                </div>
+              )}
+            />
+          </Column>
         )}
       </DataGrid>
     </div>

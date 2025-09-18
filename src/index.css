@@ -72,6 +72,46 @@ body,
   color: white !important;
 }
 
+/* --- FORM ACTION BUTTONS OVERRIDE --- */
+/* Tombol Save (Warna Biru Utama) */
+.form-save-button {
+  background-color: #1d4ed8 !important; /* bi-blue-700 */
+  color: white !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+  cursor: pointer !important;
+}
+
+.form-save-button:hover {
+  background-color: #1e40af !important; /* bi-blue-800 */
+}
+
+/* Tombol Cancel (Gaya Netral) */
+.form-cancel-button {
+  background-color: white !important;
+  color: #334155 !important; /* bi-slate-700 */
+  border: 1px solid #cbd5e1 !important; /* bi-slate-300 */
+  border-radius: 0.375rem !important; /* rounded-md */
+  cursor: pointer !important;
+}
+
+.form-cancel-button:hover {
+  background-color: #f1f5f9 !important; /* bi-slate-100 */
+}
+
+/* Tombol Search */
+.form-search-button {
+  background-color: #1d4ed8 !important; /* bi-blue-700 */
+  color: white !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  height: 100%;
+}
+
+.form-search-button:hover {
+  background-color: #1e40af !important; /* bi-blue-800 */
+}
+
 /* Beri jarak (padding) pada header DataGrid */
 .dx-datagrid-header-panel {
   padding: 1rem 1rem 0 1rem;
@@ -87,4 +127,11 @@ body,
 .dx-datagrid-pager .dx-page-size.dx-selection {
   border-bottom: 2px solid #1d4ed8 !important; /* bi-blue-700 */
   color: #1d4ed8 !important;
+}
+
+/* Menyamakan style label bawaan DevExtreme Form dengan label custom */
+.dx-form .dx-field-item-label-text {
+  font-size: 0.875rem !important; /* 14px */
+  font-weight: 500 !important;
+  color: #334155 !important; /* text-gray-700 / bi-slate-700 */
 }

@@ -171,7 +171,10 @@ const PenjualanForm = () => {
           readOnly={isReadOnly}
         >
           <GroupItem caption="Header" colCount={4}>
-            <SimpleItem dataField="jualh_kode" label={{ text: "Kode" }}>
+            <SimpleItem
+              dataField="jualh_kode"
+              label={{ text: "Kode" }}
+            >
               <RequiredRule />
               <StringLengthRule max={10} message="Kode max 10 karakter" />
             </SimpleItem>
@@ -217,7 +220,7 @@ const PenjualanForm = () => {
           </GroupItem>
           <GroupItem caption="Detail">
             <PenjualanFormDetailGrid
-            outletId={formData.outlet_id}
+              outletId={formData.outlet_id}
               tempId={formData.temptable_detail_id}
               readOnly={isReadOnly}
             />

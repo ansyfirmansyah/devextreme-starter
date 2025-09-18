@@ -68,7 +68,7 @@ const findRouteByPath = (routes, path) => {
 };
 
 const MainLayout = () => {
-  const [isDrawerPinned, setIsDrawerPinned] = useState(true);
+  const [isDrawerPinned, setIsDrawerPinned] = useState(false);
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
   const hoverTimeoutRef = useRef(null);
   const treeViewRef = useRef(null);

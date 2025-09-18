@@ -76,7 +76,7 @@ const PenjualanGrid = () => {
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
-        <Paging defaultPageSize={10} />
+        <Paging defaultPageSize={5} />
         <Pager
           showPageSizeSelector={true}
           allowedPageSizes={[5, 10, 20]}
