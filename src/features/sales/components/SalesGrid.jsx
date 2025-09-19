@@ -12,9 +12,9 @@ import notify from "devextreme/ui/notify";
 import { confirm } from "devextreme/ui/dialog";
 import DataSource from "devextreme/data/data_source";
 
-import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import { salesStore } from "../../../services/salesService";
+import { GridHeaderWithUpload } from "../../../components/ui/GridHeader";
 
 const SalesGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -25,6 +25,7 @@ const SalesGrid = () => {
 
   /* Handler untuk tombol Add, View, Edit, Delete */
   const handleAdd = () => navigate("new");
+  const handleUpload = () => navigate("upload");
   const handleView = (id) => navigate(`${id}`);
   const handleEdit = (id) => navigate(`${id}/edit`);
   const handleDelete = async (id) => {
@@ -63,10 +64,12 @@ const SalesGrid = () => {
         remoteOperations={true}
       >
         // Header grid dengan tombol Add
-        <PageHeader
+        <GridHeaderWithUpload
           title="Sales"
           buttonText="Add Sales"
           onButtonClick={handleAdd}
+          buttonTextUpload="Upload Sales"
+          onButtonClickUpload={handleUpload}
         />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />

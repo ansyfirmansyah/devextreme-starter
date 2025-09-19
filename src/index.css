@@ -1,9 +1,17 @@
-/** File ini mengatur hal-hal mendasar yang bersifat global dan bukan spesifik untuk layout aplikasi
-  termasuk memuat Tailwind CSS dan override Library Pihak Ketiga
-**/
+/**
+ * File ini mengatur hal-hal mendasar yang bersifat global dan bukan spesifik untuk layout aplikasi.
+ * Termasuk:
+ * - Memuat Tailwind CSS
+ * - Override Library Pihak Ketiga (DevExtreme)
+ * - Definisi warna kustom untuk tema aplikasi
+ */
 
-/* Mendefinisikan warna kustom untuk Tailwind v4 */
+/* =========================
+   TAILWIND CUSTOM THEME
+   ========================= */
+/* Mendefinisikan warna kustom untuk Tailwind v4 agar konsisten di seluruh aplikasi */
 @theme {
+  /* Warna biru utama aplikasi */
   --color-bi-blue-50: #eff6ff;
   --color-bi-blue-100: #dbeafe;
   --color-bi-blue-200: #bfdbfe;
@@ -17,6 +25,7 @@
   --color-bi-blue-950: #172554;
   --color-bi-blue: var(--color-bi-blue-700);
 
+  /* Warna slate untuk background dan teks */
   --color-bi-slate-50: #f8fafc;
   --color-bi-slate-100: #f1f5f9;
   --color-bi-slate-200: #e2e8f0;
@@ -31,7 +40,10 @@
   --color-bi-slate: var(--color-bi-slate-500);
 }
 
-/* --- GENERAL & FONT SETUP --- */
+/* =========================
+   GENERAL & FONT SETUP
+   ========================= */
+/* Set tinggi dan font global untuk aplikasi */
 html,
 body,
 #root {
@@ -45,16 +57,19 @@ body,
   background-color: #f1f5f9; /* bi-slate-100 */
 }
 
+/* Import Tailwind CSS untuk utilitas styling */
 @import "tailwindcss";
 
-/* === DEVEXTREME COMPONENT OVERRIDES === */
+/* =========================
+   DEVEXTREME COMPONENT OVERRIDES
+   ========================= */
 
-/* Override spesifik untuk background toolbar utama */
+/* Override background toolbar utama DevExtreme agar sesuai tema */
 .dx-toolbar {
   background-color: var(--dx-toolbar-bg, #fff);
 }
 
-/* Styling untuk baris header DataGrid */
+/* Styling untuk baris header DataGrid DevExtreme */
 .dx-datagrid-headers .dx-header-row {
   background-image: linear-gradient(
     to bottom,
@@ -67,15 +82,15 @@ body,
   text-align: center !important;
 }
 
-/* Styling baris DataGrid */
+/* Styling baris DataGrid DevExtreme */
 .dx-datagrid-rowsview .dx-row > .dx-td {
-  border-bottom: 1px solid #e5e7eb; /* Warna Tailwind: gray-200 */
+  border-bottom: 1px solid #e5e7eb; /* Tailwind: gray-200 */
 }
 .dx-datagrid-rowsview .dx-row.dx-row-alt > td {
   background-color: #f1f5f9 !important; /* Tailwind: bg-slate-100 */
 }
 
-/* Styling untuk Pager (Pagination) */
+/* Styling untuk Pager (Pagination) DataGrid DevExtreme */
 .dx-datagrid-pager .dx-page.dx-selection {
   background-color: #1d4ed8 !important; /* bi-blue-700 */
   color: white !important;
@@ -86,19 +101,21 @@ body,
   color: #1d4ed8 !important;
 }
 
-/* Menyamakan style label bawaan DevExtreme Form */
+/* Menyamakan style label bawaan DevExtreme Form agar konsisten dengan aplikasi */
 .dx-form .dx-field-item-label-text {
   font-size: 0.875rem !important; /* 14px */
   font-weight: 500 !important;
   color: #334155 !important; /* text-gray-700 / bi-slate-700 */
 }
 
-/* Beri jarak (padding) pada header DataGrid */
+/* Beri jarak (padding) pada header DataGrid DevExtreme */
 .dx-datagrid-header-panel {
   padding: 1rem 1rem 0 1rem;
 }
 
-/* === CUSTOM COMPONENT STYLES === */
+/* =========================
+   CUSTOM COMPONENT STYLES
+   ========================= */
 
 /* Styling untuk tombol "Add" di header grid */
 .grid-add-button {
@@ -114,7 +131,21 @@ body,
   color: white !important;
 }
 
-/* Tombol Save (Form) */
+/* Styling untuk tombol sekunder di header grid (misal: download template) */
+.grid-secondary-button {
+  background-color: white !important;
+  color: #1d4ed8 !important; /* warna bi-blue-700 */
+  border: 1px solid #1d4ed8 !important;
+  border-radius: 0.375rem !important;
+}
+.grid-secondary-button:hover {
+  background-color: #eff6ff !important; /* warna bi-blue-50 */
+}
+.grid-secondary-button .dx-icon {
+  color: #1d4ed8 !important; /* warna bi-blue-700 */
+}
+
+/* Styling tombol Save pada Form */
 .form-save-button {
   background-color: #1d4ed8 !important;
   color: white !important;
@@ -126,7 +157,7 @@ body,
   background-color: #1e40af !important;
 }
 
-/* Tombol Cancel (Form) */
+/* Styling tombol Cancel pada Form */
 .form-cancel-button {
   background-color: white !important;
   color: #334155 !important;
@@ -138,7 +169,7 @@ body,
   background-color: #f1f5f9 !important;
 }
 
-/* Tombol Search (Form) */
+/* Styling tombol Search pada Form */
 .form-search-button {
   background-color: #1d4ed8 !important;
   color: white !important;
@@ -150,6 +181,7 @@ body,
   background-color: #1e40af !important;
 }
 
+/* Container utama untuk form (misal: upload, edit, dll) */
 .form-container {
   padding: 24px;
   background-color: white;
@@ -157,6 +189,12 @@ body,
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
+/* Sembunyikan banner lisensi DevExtreme jika muncul */
 .dx-licence-banner {
   display: none !important;
+}
+
+/* Styling khusus untuk baris data yang tidak valid pada grid upload */
+.invalid-row > td {
+  background-color: #fee2e2 !important; /* Tailwind: bg-red-100 */
 }

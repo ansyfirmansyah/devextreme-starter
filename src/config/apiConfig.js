@@ -24,6 +24,9 @@ export const API_ENDPOINTS = {
     post: `${API_BASE_URL}/sales/post`,
     put: `${API_BASE_URL}/sales/put`,
     delete: `${API_BASE_URL}/sales/delete`,
+    downloadTemplate: `${API_BASE_URL}/sales/download-template`,
+    previewUpload: `${API_BASE_URL}/sales/preview-upload`,
+    commitUpload: `${API_BASE_URL}/sales/commit-upload`,
   },
   klasifikasi: {
     get: `${API_BASE_URL}/klasifikasi/get`,
