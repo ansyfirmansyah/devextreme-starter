@@ -78,6 +78,7 @@ export const navigationRoutes = [
       // Ini adalah sub-menunya
       {
         id: 9991,
+        parentId: 999,
         text: "Struk Penjualan",
         icon: ICONS.money,
         path: "/reports/struk-penjualan",
@@ -85,6 +86,7 @@ export const navigationRoutes = [
       },
       {
         id: 9992,
+        parentId: 999,
         text: "Outlet Summary",
         icon: ICONS.money,
         path: "/reports/outlet-summary",

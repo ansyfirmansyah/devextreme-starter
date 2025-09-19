@@ -9,56 +9,71 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Mencegah scroll di level tertinggi */
 }
 
-/* --- TOOLBAR STYLING (CARA YANG BENAR) --- */
-/* Targetkan class .dx-toolbar yang ada di dalam .app-container */
+/* --- TOOLBAR STYLING --- */
 .app-container > .dx-toolbar {
   flex-shrink: 0;
-  background-color: #1d4ed8; /* Kode warna untuk bi-blue-700 */
+  background-color: #1d4ed8;
   color: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   padding: 2px;
+  z-index: 20; /* Pastikan toolbar di atas sidebar */
 }
 
-/* --- DRAWER & CONTENT AREA --- */
-.app-container > .dx-drawer {
+/* --- Area di bawah Toolbar (Sidebar + Konten) --- */
+.main-content-area {
+  display: flex;
   flex-grow: 1;
-  min-height: 0;
+  min-height: 0; /* Penting untuk flexbox di dalam flexbox */
 }
 
-.dx-drawer-content {
-  padding: 0 !important;
-  /* Beri warna background fallback jika ada yg aneh */
-  background-color: #f1f5f9; /* bi-slate-100 */
+/* --- SIDEBAR KUSTOM --- */
+.sidebar {
+  flex-shrink: 0;
+  background-color: white;
+  border-right: 1px solid #e2e8f0; /* bi-slate-200 */
+  transition: width 0.3s ease-in-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.expanded {
+  width: 250px;
+}
+
+.sidebar.collapsed {
+  width: 80px; /* Lebar saat hanya ikon */
+}
+
+/* --- MAIN CONTENT & FOOTER --- */
+.main-content {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  overflow: hidden; /* Mencegah konten meluber */
+  background-color: #f1f5f9; /* bi-slate-100 */
 }
 
-.content-block {
+.content-wrapper {
   padding: 24px;
-  flex-grow: 1; /* Biarkan konten mengisi ruang yang tersedia */
-  box-sizing: border-box;
-  overflow-y: auto;
+  flex-grow: 1;
+  overflow-y: auto; /* Scroll hanya di area konten */
 }
 
-/* --- HIDE DEVEXPRESS LICENSE BANNER --- */
-/* Aturan ini spesifik untuk DevExtreme dan lebih baik disimpan di sini */
-.dx-licence-banner {
-  display: none !important;
+/* --- SUBMENU ANIMATION --- */
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- ADDITIONAL DATAGRID SCROLL FIXES --- */
-/* Ini adalah perbaikan spesifik untuk komponen DataGrid, simpan saja untuk keamanan */
-.dx-datagrid .dx-datagrid-rowsview {
-  overflow: auto !important;
+.submenu.expanded {
+  max-height: 500px;
 }
 
-/* Pastikan form container tidak memakan seluruh tinggi layar */
-.form-container {
-  padding: 24px;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+/* Sedikit indentasi untuk submenu agar lebih jelas hirarkinya */
+.submenu > div {
+  padding-left: 1rem;
 }
