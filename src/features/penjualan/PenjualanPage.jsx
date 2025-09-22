@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import PenjualanForm from "./components/PenjualanForm";
 import PenjualanGrid from "./components/PenjualanGrid";
+import PenjualanUploadPage from "./components/PenjualanUploadPage";
 
 /**
  * Komponen ini sekarang bertindak sebagai "Router" untuk fitur Penjualan.
@@ -14,6 +15,7 @@ const PenjualanPage = () => {
     <Routes>
       <Route index element={<PenjualanGrid />} />
       <Route path="new" element={<PenjualanForm />} />
+      <Route path="upload" element={<PenjualanUploadPage />} />
       <Route path=":id" element={<PenjualanForm />} />
       <Route path=":id/edit" element={<PenjualanForm />} />
     </Routes>

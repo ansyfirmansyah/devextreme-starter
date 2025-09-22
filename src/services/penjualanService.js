@@ -154,3 +154,55 @@ export const refDetailJualDataSource = (tempId) => {
   });
 };
 /* END TEMP TABLE */
+
+export const previewPenjualanUpload = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(API_ENDPOINTS.penjualan.previewUpload, {
+    // Definisikan endpoint upload di apiConfig.js
+    method: "POST",
+    body: formData,
+    // Headers TIDAK perlu di-set untuk multipart/form-data, browser akan menanganinya
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    // Gabungkan pesan error dari backend menjadi satu string
+    const errorMessage = errorData.errors
+      ? errorData.errors.join("\n")
+      : errorData.message;
+    throw new Error(errorMessage || "Failed to upload file.");
+  }
+
+  return await response.json();
+};
+
+export const commitPenjualanUpload = async (payload) => {
+  try {
+    const response = await fetch(API_ENDPOINTS.penjualan.commitUpload, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json-patch+json",
+      },
+    }).catch((error) => {
+      throw error;
+    });
+
+    // Jika respons tidak berhasil (misal, error 404)
+    if (!response.ok) {
+      // Parse respons sebagai JSON untuk mendapatkan pesan error dari server
+      const responseData = await response.json();
+      throw new Error(
+        responseData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    // Parse respons sebagai JSON
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -13,13 +13,13 @@ import DataSource from "devextreme/data/data_source";
 import { useNavigate } from "react-router-dom";
 import { confirm } from "devextreme/ui/dialog";
 
-import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import { penjualanStore } from "../../../services/penjualanService";
 import {
   renderDateCell,
   renderHeader,
 } from "../../../components/ui/GridCellRenderers";
+import { GridHeaderWithUpload } from "../../../components/ui/GridHeader";
 
 const PenjualanGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -30,6 +30,7 @@ const PenjualanGrid = () => {
 
   /* Handler untuk tombol Add, View, Edit, Delete */
   const handleAdd = () => navigate("new");
+  const handleUpload = () => navigate("upload");
   const handleView = (id) => navigate(`${id}`);
   const handleEdit = (id) => navigate(`${id}/edit`);
   const handleDelete = async (id) => {
@@ -67,11 +68,13 @@ const PenjualanGrid = () => {
         rowAlternationEnabled={true}
         remoteOperations={true}
       >
-        // Header grid dengan tombol Add
-        <PageHeader
+        // Header grid dengan tombol Add dan upload
+        <GridHeaderWithUpload
           title="Penjualan"
           buttonText="Add Penjualan"
           onButtonClick={handleAdd}
+          buttonTextUpload="Upload Penjualan"
+          onButtonClickUpload={handleUpload}
         />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />

@@ -62,5 +62,8 @@ export const API_ENDPOINTS = {
     detailJual: `${API_BASE_URL}/penjualan/summary/jual-detail`,
     initTempDetailJual: `${API_BASE_URL}/penjualan/detail/init/jual-detail`,
     getTempDetailJual: `${API_BASE_URL}/penjualan/detail/jual-detail`,
+    downloadTemplate: `${API_BASE_URL}/penjualan/download-template`,
+    previewUpload: `${API_BASE_URL}/penjualan/preview-upload`,
+    commitUpload: `${API_BASE_URL}/penjualan/commit-upload`,
   },
 };
