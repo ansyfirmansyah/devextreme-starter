@@ -44,8 +44,6 @@ const PenjualanForm = () => {
   // Dropdown
   const [lookupRefOutlet, setLookupRefOutlet] = useState(null);
   const [lookupRefSales, setLookupRefSales] = useState(null);
-  const [selectedOutletId, setSelectedOutletId] = useState(null);
-  const [selectedSalesId, setSelectedSalesId] = useState(null);
 
   // useEffect untuk mengambil data jika dalam mode edit/view
   useEffect(() => {
@@ -120,7 +118,10 @@ const PenjualanForm = () => {
   };
 
   // Handler untuk kembali ke halaman grid
-  const handleCancel = useCallback(() => navigate("/penjualan"), [navigate]);
+  const handleCancel = useCallback(() => {
+    // Saat kembali ke /penjualan, sertakan kembali state yang tadi diterima
+    navigate("/penjualan", { state: { pageIndex: location.state?.pageIndex } });
+  }, [navigate, location.state]);
 
   // Handler untuk submit form
   const handleSubmit = async (e) => {
