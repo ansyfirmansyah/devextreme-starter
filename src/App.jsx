@@ -10,7 +10,8 @@ import MainLayout from "./components/ui/MainLayout";
 
 // Impor halaman default
 import { navigationRoutes } from "./config/navigationConfig";
-import { HomePage, NotFound, Privacy, Terms } from "./features/SamplePages";
+import { NotFound, Privacy, Terms } from "./features/SamplePages";
+import HomePage from "./features/dashboard/HomePage";
 
 const App = () => {
   // Helper rekursif yang lebih sederhana untuk me-render rute

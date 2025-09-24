@@ -5,11 +5,6 @@ import React from "react";
 
 import CustomersPage from "../features/customers/CustomersPage";
 import OutletsPage from "../features/outlets/OutletsPage";
-import {
-  HomePage,
-  SalesReportPage,
-  StockReportPage,
-} from "../features/SamplePages";
 import SalesPage from "../features/sales/SalesPage";
 import KlasifikasiPage from "../features/klasifikasi/KlasifikasiPage";
 import BarangPage from "../features/barang/BarangPage";
@@ -17,6 +12,7 @@ import StrukPenjualanPage from "../features/reports/struk/StrukPenjualanPage";
 import OutletSummaryPage from "../features/reports/struk/OutletSummaryPage";
 import PenjualanPage from "../features/penjualan/PenjualanPage";
 import { ICONS } from "../components/icon/menuIcon";
+import HomePage from "../features/dashboard/HomePage";
 
 // 1. Ubah struktur menjadi tree. Gunakan properti 'items' untuk sub-menu.
 export const navigationRoutes = [

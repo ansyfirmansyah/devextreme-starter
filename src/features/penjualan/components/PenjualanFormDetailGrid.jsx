@@ -17,6 +17,8 @@ import DataGrid, {
   Editing,
   Button as GridButton,
   Pager,
+  Summary,
+  TotalItem
 } from "devextreme-react/data-grid";
 import { NumberBox, Popup, TextBox } from "devextreme-react";
 import {
@@ -341,6 +343,25 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
             />
           </Column>
         )}
+        <Summary>
+          <TotalItem
+            column="barang_kode"
+            summaryType="count"
+            displayFormat="Orders: {0}"
+          />
+          <TotalItem
+            column="Total Harga"
+            summaryType="sum"
+            displayFormat="{0}"
+            valueFormat="#,##0.##"
+          />
+          <TotalItem
+            column="Total"
+            summaryType="sum"
+            displayFormat="{0}"
+            valueFormat="#,##0.##"
+          />
+        </Summary>
       </DataGrid>
     </div>
   );

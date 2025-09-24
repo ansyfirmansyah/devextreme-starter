@@ -66,4 +66,8 @@ export const API_ENDPOINTS = {
     previewUpload: `${API_BASE_URL}/penjualan/preview-upload`,
     commitUpload: `${API_BASE_URL}/penjualan/commit-upload`,
   },
+  dashboard: {
+    kpi: `${API_BASE_URL}/dashboard/kpi`,
+    salesTrend: `${API_BASE_URL}/dashboard/sales-trend`,
+  },
 };
