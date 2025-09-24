@@ -198,3 +198,8 @@ body,
 .invalid-row > td {
   background-color: #fee2e2 !important; /* Tailwind: bg-red-100 */
 }
+
+/* Memastikan tabs wrapper tidak overflow */
+.dx-tabs-wrapper {
+  width: auto !important;
+}
