@@ -131,6 +131,14 @@ const PenjualanUploadPage = () => {
         );
         if (!result) return;
       }
+    } else if (hasInvalidRowsDetail) {
+      const result = await confirm(
+        `Ada ${
+          previewDataDetail.length - validRowsDetail.length
+        } baris data detail yang tidak valid dan tidak akan diimpor. Lanjutkan?`,
+        "Konfirmasi"
+      );
+      if (!result) return;
     }
 
     setIsLoading(true);
@@ -260,18 +268,21 @@ const PenjualanUploadPage = () => {
               <h3 className="text-lg font-semibold text-bi-slate-700 mb-2">
                 Data Preview
               </h3>
-              <Tabs
-                dataSource={tabItems}
-                selectedIndex={selectedTabIndex}
-                onItemClick={handleTabClick}
-              />
-              {selectedTabIndex == 0 && (
+              <div className="mb-2">
+                <Tabs
+                  dataSource={tabItems}
+                  selectedIndex={selectedTabIndex}
+                  onItemClick={handleTabClick}
+                />
+              </div>
+              {selectedTabIndex === 0 && (
                 <DataGrid
                   dataSource={previewDataHeader}
                   keyExpr="rowNumber"
                   showBorders={true}
                   height={previewDataHeader.length >= 10 ? 380 : 220}
                   onRowPrepared={onRowPrepared}
+                  columnAutoWidth={true}
                 >
                   <Paging defaultPageSize={10} />
                   <Pager
@@ -283,7 +294,6 @@ const PenjualanUploadPage = () => {
                   <Column
                     dataField="rowNumber"
                     caption="Baris"
-                    width={60}
                     alignment="center"
                     headerCellRender={() => renderHeader("Baris")}
                   />
@@ -291,26 +301,22 @@ const PenjualanUploadPage = () => {
                     dataField="jualh_kode"
                     caption="Kode"
                     headerCellRender={() => renderHeader("Kode")}
-                    width={100}
                   />
                   <Column
                     dataField="jualh_date"
                     caption="Tanggal Penjualan"
                     headerCellRender={() => renderHeader("Tanggal Penjualan")}
-                    width={200}
                     cellRender={renderDateCell}
                   />
                   <Column
                     dataField="outlet"
                     caption="Outlet"
                     headerCellRender={() => renderHeader("Outlet")}
-                    width={250}
                   />
                   <Column
                     dataField="sales"
                     caption="Sales"
                     headerCellRender={() => renderHeader("Sales")}
-                    width={250}
                   />
                   {/* Kolom status validasi */}
                   <Column
@@ -332,13 +338,14 @@ const PenjualanUploadPage = () => {
                   />
                 </DataGrid>
               )}
-              {selectedTabIndex == 1 && (
+              {selectedTabIndex === 1 && (
                 <DataGrid
                   dataSource={previewDataDetail}
                   keyExpr="rowNumber"
                   showBorders={true}
                   height={previewDataDetail.length >= 10 ? 380 : 220}
                   onRowPrepared={onRowPrepared}
+                  columnAutoWidth={true}
                 >
                   <Paging defaultPageSize={10} />
                   <Pager
@@ -350,7 +357,6 @@ const PenjualanUploadPage = () => {
                   <Column
                     dataField="rowNumber"
                     caption="Baris"
-                    width={60}
                     alignment="center"
                     headerCellRender={() => renderHeader("Baris")}
                   />
@@ -358,31 +364,26 @@ const PenjualanUploadPage = () => {
                     dataField="jualh_kode"
                     caption="Kode"
                     headerCellRender={() => renderHeader("Kode")}
-                    width={100}
                   />
                   <Column
                     dataField="barang"
                     caption="Barang"
                     headerCellRender={() => renderHeader("Barang")}
-                    width={200}
                   />
                   <Column
                     dataField="juald_harga"
                     caption="Harga"
                     headerCellRender={() => renderHeader("Harga")}
-                    width={100}
                   />
                   <Column
                     dataField="juald_qty"
                     caption="Qty"
                     headerCellRender={() => renderHeader("Qty")}
-                    width={100}
                   />
                   <Column
                     dataField="diskon"
                     caption="Diskon"
                     headerCellRender={() => renderHeader("Diskon")}
-                    width={150}
                   />
                   {/* Kolom status validasi */}
                   <Column

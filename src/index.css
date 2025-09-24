@@ -199,7 +199,41 @@ body,
   background-color: #fee2e2 !important; /* Tailwind: bg-red-100 */
 }
 
+/* =========================
+   CUSTOM MINIMALIST TABS
+   ========================= */
+
 /* Memastikan tabs wrapper tidak overflow */
 .dx-tabs-wrapper {
   width: auto !important;
+  background-color: transparent !important;
+}
+
+/* Setiap item tab (Base Style) */
+.dx-tabs-styling-mode-primary .dx-tab {
+  transition: all 0.2s ease-in-out;
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 6px !important;
+}
+
+/* Efek saat mouse hover di atas tab yang TIDAK AKTIF */
+.dx-tabs-styling-mode-primary .dx-tab:not(.dx-tab-selected):hover {
+   background-color: #f1f5f9 !important;
+   border-bottom-color: #93c5fd !important;
+}
+.dx-tabs-styling-mode-primary .dx-tab:not(.dx-tab-selected):hover .dx-tab-text {
+   color: #1d4ed8 !important;
+}
+
+/* Tab yang sedang AKTIF/dipilih */
+.dx-tabs-styling-mode-primary .dx-tab.dx-tab-selected {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-bottom-color: #1d4ed8 !important;
+}
+
+/* Teks pada tab yang AKTIF */
+.dx-tabs-styling-mode-primary .dx-tab.dx-tab-selected .dx-tab-text {
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
 }
