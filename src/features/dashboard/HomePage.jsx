@@ -7,6 +7,7 @@ import { ICONS } from "../../components/icon/menuIcon";
 import { getKpiData } from "../../services/dashboardService";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import TopItemsCard from './components/TopItemsCard';
+import notify from "devextreme/ui/notify";
 
 const HomePage = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -21,6 +22,7 @@ const HomePage = () => {
       } catch (error) {
         // Tampilkan error di konsol jika gagal mengambil data
         console.error(error);
+        notify(error?.message || "Failed to fetch data.", "error", 3000);
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +49,7 @@ const HomePage = () => {
           <KpiCard
             title="Penjualan Bulan Ini"
             value={`Rp ${new Intl.NumberFormat("id-ID").format(
-              dashboardData.salesMonth
+              dashboardData?.salesMonth || 0
             )}`}
             icon={ICONS.money}
             color="blue"
@@ -57,7 +59,7 @@ const HomePage = () => {
         <div className="lg:col-span-6">
           <KpiCard
             title="Transaksi Bulan Ini"
-            value={dashboardData.transactionsMonth}
+            value={dashboardData?.transactionsMonth || 0}
             icon={ICONS.cart}
             color="green"
           />
@@ -67,7 +69,7 @@ const HomePage = () => {
         <div className="lg:col-span-4">
           <TopItemsCard
             title="Produk Terlaris Bulan Ini"
-            items={dashboardData.topProducts}
+            items={dashboardData?.topProducts}
             icon={ICONS.product}
             color="yellow"
           />
@@ -76,7 +78,7 @@ const HomePage = () => {
         <div className="lg:col-span-4">
           <TopItemsCard
             title="Outlet Teramai Bulan Ini"
-            items={dashboardData.topOutlets}
+            items={dashboardData?.topOutlets}
             icon={ICONS.outlets}
             color="red"
           />
@@ -85,7 +87,7 @@ const HomePage = () => {
         <div className="lg:col-span-4">
           <TopItemsCard
             title="Sales Terbaik Bulan Ini"
-            items={dashboardData.topSales}
+            items={dashboardData?.topSales}
             icon={ICONS.sales}
             color="blue"
           />

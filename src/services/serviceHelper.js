@@ -15,8 +15,11 @@ export const createCrudStore = (keyField, apiEndpoints, entityName) => {
     insertUrl: apiEndpoints.post,
     updateUrl: apiEndpoints.put,
     deleteUrl: apiEndpoints.delete,
-    onInserted: () => notify(`${entityName} created successfully`, "success", 2000),
-    onUpdated: () => notify(`${entityName} updated successfully`, "success", 2000),
-    onRemoved: () => notify(`${entityName} deleted successfully`, "success", 2000),
+    onInserted: () =>
+      notify(`${entityName} created successfully`, "success", 2000),
+    onUpdated: () =>
+      notify(`${entityName} updated successfully`, "success", 2000),
+    onRemoved: () =>
+      notify(`${entityName} deleted successfully`, "success", 2000),
   });
 };
