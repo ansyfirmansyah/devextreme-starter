@@ -49,7 +49,7 @@ const PenjualanGrid = () => {
   };
 
   // Handler untuk tombol aksi grid
-  const handleAdd = () => navigate("new");
+  const handleAdd = () => navigate("new", { state: { pageIndex: currentPageIndex } });
   const handleUpload = () => navigate("upload");
   const handleView = (id) => {
     // Simpan pageIndex ke state saat navigasi ke detail

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DataGrid, {
   Column,
   Paging,
@@ -22,12 +22,34 @@ const SalesGrid = () => {
   // yang bisa menyebabkan masalah pada DataGrid
   const [salesDataSource] = useState(() => new DataSource(salesStore));
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
+  const [currentPageIndex, setCurrentPageIndex] = useState(
+    location.state?.pageIndex || 0
+  );
+
+  /**
+   * Handler untuk sinkronisasi page index saat halaman di grid berubah.
+   * Disimpan ke state agar bisa dikembalikan saat navigasi.
+   */
+  const handleOptionChange = (e) => {
+    if (e.fullName === "paging.pageIndex") {
+      setCurrentPageIndex(e.value);
+    }
+  };
 
   /* Handler untuk tombol Add, View, Edit, Delete */
-  const handleAdd = () => navigate("new");
+  const handleAdd = () => navigate("new", { state: { pageIndex: currentPageIndex } });
   const handleUpload = () => navigate("upload");
-  const handleView = (id) => navigate(`${id}`);
-  const handleEdit = (id) => navigate(`${id}/edit`);
+  const handleView = (id) => {
+    // Simpan pageIndex ke state saat navigasi ke detail
+    navigate(`${id}`, { state: { pageIndex: currentPageIndex } });
+  };
+  const handleEdit = (id) => {
+    // Simpan pageIndex ke state saat navigasi ke edit
+    navigate(`${id}/edit`, { state: { pageIndex: currentPageIndex } });
+  };
   const handleDelete = async (id) => {
     const result = await confirm(
       "Are you sure you want to delete this data?",
@@ -62,6 +84,7 @@ const SalesGrid = () => {
         showBorders={true}
         rowAlternationEnabled={true}
         remoteOperations={true}
+        onOptionChanged={handleOptionChange}
       >
         // Header grid dengan tombol Add
         <GridHeaderWithUpload
@@ -74,7 +97,7 @@ const SalesGrid = () => {
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
-        <Paging defaultPageSize={10} />
+        <Paging defaultPageSize={10} pageIndex={currentPageIndex} />
         <Pager
           showPageSizeSelector={true}
           allowedPageSizes={[5, 10, 20]}

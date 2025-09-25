@@ -68,7 +68,10 @@ const SalesForm = () => {
   const outletDataSource = useMemo(() => getOutletLookupStore(), [id]);
 
   // Handler untuk kembali ke halaman grid
-  const handleCancel = useCallback(() => navigate("/sales"), [navigate]);
+  const handleCancel = useCallback(() => {
+    // Saat kembali ke /penjualan, sertakan kembali state yang tadi diterima
+    navigate("/sales", { state: { pageIndex: location.state?.pageIndex } });
+  }, [navigate, location.state]);
 
   // Handler untuk submit form
   const handleSubmit = async (e) => {
