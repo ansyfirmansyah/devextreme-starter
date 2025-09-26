@@ -2,6 +2,7 @@
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import { API_ENDPOINTS } from "../config/apiConfig";
 import { createCrudStore } from "./serviceHelper";
+import api from "./api";
 
 /**
  * Store utama untuk operasi CRUD sales.
@@ -42,7 +43,7 @@ export const previewSalesUpload = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(API_ENDPOINTS.sales.previewUpload, {
+  const response = await api(API_ENDPOINTS.sales.previewUpload, {
     // Definisikan endpoint upload di apiConfig.js
     method: "POST",
     body: formData,
@@ -70,7 +71,7 @@ export const previewSalesUpload = async (file) => {
  */
 export const commitSalesUpload = async (payload) => {
   try {
-    const response = await fetch(API_ENDPOINTS.sales.commitUpload, {
+    const response = await api(API_ENDPOINTS.sales.commitUpload, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {

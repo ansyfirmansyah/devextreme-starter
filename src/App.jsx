@@ -12,6 +12,8 @@ import MainLayout from "./components/ui/MainLayout";
 import { navigationRoutes } from "./config/navigationConfig";
 import { NotFound, Privacy, Terms } from "./features/SamplePages";
 import HomePage from "./features/dashboard/HomePage";
+import LoginPage from "./features/auth/LoginPage";
+import ProtectedRoute from "./components/ui/ProtectedRoute";
 
 const App = () => {
   // Helper rekursif yang lebih sederhana untuk me-render rute
@@ -35,18 +37,30 @@ const App = () => {
   };
 
   return (
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          {/* Rute default */}
-          <Route index element={<HomePage />} />
-          {/* Render semua rute dari config */}
-          {renderRoutes(navigationRoutes)}
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          {/* Fallback route untuk halaman yang tidak ditemukan */}
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+    <Routes>
+      {/* Rute untuk halaman login, di luar layout utama */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Rute-rute yang menggunakan MainLayout */}
+      {/* Bungkus semua rute yang butuh login dengan ProtectedRoute */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Rute default */}
+        <Route index element={<HomePage />} />
+        {/* Render semua rute dari config */}
+        {renderRoutes(navigationRoutes)}
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        {/* Fallback route untuk halaman yang tidak ditemukan */}
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 };
 

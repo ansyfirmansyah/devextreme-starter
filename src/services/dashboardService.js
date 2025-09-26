@@ -1,12 +1,13 @@
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import { API_ENDPOINTS } from "../config/apiConfig";
+import api from "./api";
 
 /**
  * Mengambil data KPI (Key Performance Indicators) dari backend.
  * @returns {Promise<Object>} Data KPI dashboard
  */
 export const getKpiData = async () => {
-  const response = await fetch(API_ENDPOINTS.dashboard.kpi);
+  const response = await api(API_ENDPOINTS.dashboard.kpi);
   if (!response.ok) {
     // Jika gagal, lempar error agar bisa ditangani di komponen pemanggil
     throw new Error("Gagal memuat data KPI.");

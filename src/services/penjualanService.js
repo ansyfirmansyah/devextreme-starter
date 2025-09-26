@@ -2,6 +2,7 @@ import { createStore } from "devextreme-aspnet-data-nojquery";
 
 import { createCrudStore } from "./serviceHelper";
 import { API_ENDPOINTS } from "../config/apiConfig";
+import api from "./api";
 
 /**
  * Store utama untuk operasi CRUD penjualan.
@@ -78,7 +79,7 @@ export const initTemp = async (jualhId, url) => {
       jualh_id: jualhId.toString(),
     });
     // Kirim request POST ke API
-    const response = await fetch(url, {
+    const response = await api(url, {
       method: "POST",
       body: payload,
     });
@@ -104,7 +105,7 @@ export const initTempDetail = async (jualhId) => {
 // API untuk menambah atau menghapus data di tabel temp (jual detail)
 export const addDelTemp = async (payload, url, method) => {
   try {
-    const response = await fetch(url, {
+    const response = await api(url, {
       method: method,
       body: payload,
     }).catch((error) => {
@@ -159,7 +160,7 @@ export const previewPenjualanUpload = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(API_ENDPOINTS.penjualan.previewUpload, {
+  const response = await api(API_ENDPOINTS.penjualan.previewUpload, {
     // Definisikan endpoint upload di apiConfig.js
     method: "POST",
     body: formData,
@@ -180,7 +181,7 @@ export const previewPenjualanUpload = async (file) => {
 
 export const commitPenjualanUpload = async (payload) => {
   try {
-    const response = await fetch(API_ENDPOINTS.penjualan.commitUpload, {
+    const response = await api(API_ENDPOINTS.penjualan.commitUpload, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {

@@ -4,6 +4,7 @@ import notify from "devextreme/ui/notify";
 
 import { API_ENDPOINTS } from "../config/apiConfig";
 import { createCrudStore } from "./serviceHelper";
+import api from "./api";
 
 /**
  * Store utama untuk operasi CRUD barang.
@@ -83,7 +84,7 @@ export const initTemp = async (barangId, url) => {
       barang_id: barangId.toString(),
     });
     // Kirim request POST ke API
-    const response = await fetch(url, {
+    const response = await api(url, {
       method: "POST",
       body: payload,
     });
@@ -114,7 +115,7 @@ export const initTempDiskon = async (barangId) => {
 // API untuk menambah atau menghapus data di tabel temp (outlet/diskon)
 export const addDelTemp = async (payload, url, method) => {
   try {
-    const response = await fetch(url, {
+    const response = await api(url, {
       method: method,
       body: payload,
     }).catch((error) => {
