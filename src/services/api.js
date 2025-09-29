@@ -22,7 +22,6 @@ const api = async (url, options = {}) => {
     options.headers = {
       ...options.headers,
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     };
   }
   // Tambahkan withCredentials untuk cookie session check

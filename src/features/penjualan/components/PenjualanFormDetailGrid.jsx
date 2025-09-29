@@ -328,7 +328,7 @@ const PenjualanFormDetailGrid = ({ tempId, outletId, readOnly }) => {
           caption="Total"
           format={"#,##0.##"}
         />
-        <Editing mode="row" allowDeleting={true} useIcons={false} />
+        <Editing mode="row" allowDeleting={!readOnly} useIcons={false} />
         {!readOnly && (
           <Column type="buttons" width={80}>
             <GridButton
