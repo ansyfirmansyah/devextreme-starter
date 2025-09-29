@@ -66,6 +66,28 @@ const RegisterPage = () => {
   const [tempToken, setTempToken] = useState(""); // Token sementara dari backend setelah step 1
   const [newUserId, setNewUserId] = useState(""); // User ID baru setelah registrasi sukses
 
+  // State untuk mode input password
+  const [passwordMode, setPasswordMode] = useState('password');
+  const [confirmPasswordMode, setConfirmPasswordMode] = useState('password');
+  const passwordButton = {
+    name: 'password',
+    location: 'after',
+    options: {
+      icon: passwordMode === 'password' ? 'eyeopen' : 'eyeclose',
+      stylingMode: 'text',
+      onClick: () => setPasswordMode(prev => prev === 'password' ? 'text' : 'password'),
+    },
+  };
+  const confirmPasswordButton = {
+    name: 'confirmPassword',
+    location: 'after',
+    options: {
+      icon: confirmPasswordMode === 'password' ? 'eyeopen' : 'eyeclose',
+      stylingMode: 'text',
+      onClick: () => setConfirmPasswordMode(prev => prev === 'password' ? 'text' : 'password'),
+    },
+  };
+
   // Handler submit step 1: validasi data diri
   const handleStep1Submit = async (e) => {
     e.preventDefault();
@@ -192,9 +214,10 @@ const RegisterPage = () => {
                   <SimpleItem
                     dataField="password"
                     editorOptions={{
-                      mode: "password",
+                      mode: passwordMode,
                       stylingMode: "filled",
                       placeholder: " ",
+                      buttons: [passwordButton]
                     }}
                   >
                     <RequiredRule />
@@ -208,9 +231,10 @@ const RegisterPage = () => {
                     dataField="confirmPassword"
                     caption="Konfirmasi Password"
                     editorOptions={{
-                      mode: "password",
+                      mode: confirmPasswordMode,
                       stylingMode: "filled",
                       placeholder: " ",
+                      buttons: [confirmPasswordButton]
                     }}
                   >
                     <RequiredRule />

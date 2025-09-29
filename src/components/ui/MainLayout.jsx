@@ -58,14 +58,17 @@ const MainLayout = () => {
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const userMenuItems = [
     { id: 1, text: 'Profile', icon: 'user' },
-    { id: 2, text: 'Logout', icon: 'runner' }
+    { id: 2, text: 'Ganti Password', icon: 'key' },
+    { id: 3, text: 'Logout', icon: 'runner' }
   ];
   const onUserMenuItemClick = (e) => {
-    if (e.itemData.id === 2) { // ID untuk Logout
+    setIsUserMenuVisible(false);
+    if (e.itemData.id === 3) {
       handleLogout();
-    } else {
-      notify("Fitur belum tersedia.", "info", 1500);
-      setIsUserMenuVisible(false);
+    } else if (e.itemData.id === 2) {
+      navigate('/change-password');
+    } else if (e.itemData.id === 1) {
+      navigate('/profile');
     }
   };
 

@@ -12,6 +12,21 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ userId: '', password: '' });
 
+  // state untuk mode password
+  const [passwordMode, setPasswordMode] = useState('password');
+  const passwordButton = {
+    name: 'password',
+    location: 'after',
+    options: {
+      icon: passwordMode === 'password' ? 'eyeopen' : 'eyeclose',
+      stylingMode: 'text',
+      onClick: () => {
+        setPasswordMode(prevMode => prevMode === 'password' ? 'text' : 'password');
+      },
+    },
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -29,7 +44,7 @@ const LoginPage = () => {
       notify('Login berhasil!', 'success', 2000);
       navigate('/');
     } catch (error) {
-      notify('Login gagal, periksa kembali User ID dan Password Anda!', 'error', 3000);
+      notify(error?.message || 'Login gagal, periksa kembali User ID dan Password Anda!', 'error', 3000);
       console.error(error.message);
     } finally {
       setLoading(false);
@@ -74,9 +89,10 @@ const LoginPage = () => {
                 </SimpleItem>
                 <SimpleItem dataField="password"
                   editorOptions={{
-                    mode: 'password',
+                    mode: passwordMode,
                     stylingMode: 'filled',
-                    placeholder: 'Enter your password'
+                    placeholder: 'Enter your password',
+                    buttons: [passwordButton]
                   }}>
                   <RequiredRule message="Password is required" />
                 </SimpleItem>

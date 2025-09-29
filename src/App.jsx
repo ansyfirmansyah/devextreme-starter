@@ -15,6 +15,8 @@ import HomePage from "./features/dashboard/HomePage";
 import LoginPage from "./features/auth/LoginPage";
 import RegisterPage from "./features/auth/RegisterPage";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
+import ChangePasswordPage from "./features/account/ChangePasswordPage";
+import UserProfilePage from "./features/account/UserProfilePage";
 
 const App = () => {
   // Helper rekursif yang lebih sederhana untuk me-render rute
@@ -57,6 +59,8 @@ const App = () => {
         <Route index element={<HomePage />} />
         {/* Render semua rute dari config */}
         {renderRoutes(navigationRoutes)}
+        <Route path="/change-password" element={<ChangePasswordPage />} />
+        <Route path="/profile" element={<UserProfilePage />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         {/* Fallback route untuk halaman yang tidak ditemukan */}
