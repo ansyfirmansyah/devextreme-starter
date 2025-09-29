@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Form, SimpleItem, ButtonItem, RequiredRule } from 'devextreme-react/form';
 import notify from 'devextreme/ui/notify';
 import { login as authServiceLogin } from '../../services/authService';
@@ -29,7 +29,8 @@ const LoginPage = () => {
       notify('Login berhasil!', 'success', 2000);
       navigate('/');
     } catch (error) {
-      notify(error.message, 'error', 3000);
+      notify('Login gagal, periksa kembali User ID dan Password Anda!', 'error', 3000);
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -92,6 +93,14 @@ const LoginPage = () => {
                 />
               </Form>
             </form>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-bi-slate-600">
+                Belum punya akun?{' '}
+                <Link to="/register" className="font-medium text-bi-blue-700 hover:underline">
+                  Registrasi di sini
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

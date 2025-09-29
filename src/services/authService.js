@@ -54,3 +54,43 @@ export const logout = async (refreshToken) => {
         body: JSON.stringify({ refreshToken }), // <-- UBAH DI SINI
     });
 };
+
+/**
+ * Mengirim detail awal registrasi untuk validasi.
+ * @param {object} details - Berisi userName, email, address, phoneNumber.
+ * @returns {Promise<string>} - Token temporer jika validasi berhasil.
+ */
+export const checkRegistrationDetails = async (details) => {
+  const response = await api(API_ENDPOINTS.auth.registerCheckDetails, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(details),
+  });
+
+  const responseData = await response.json();
+  if (!response.ok || !responseData.success) {
+    throw new Error(responseData.message || 'Gagal memvalidasi data.');
+  }
+  return responseData.data.tempToken;
+};
+
+/**
+ * Mengirim password untuk menyelesaikan registrasi.
+ * @param {string} tempToken - Token dari langkah pertama.
+ * @param {string} password - Password yang sudah divalidasi.
+ * @param {string} deviceInfo - Informasi device dan browser
+ * @returns {Promise<string>} - User ID baru yang berhasil dibuat.
+ */
+export const completeRegistration = async (tempToken, password, deviceInfo) => {
+  const response = await api(API_ENDPOINTS.auth.registerComplete, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tempToken, password, deviceInfo }),
+  });
+
+  const responseData = await response.json();
+  if (!response.ok || !responseData.success) {
+    throw new Error(responseData.message || 'Registrasi gagal.');
+  }
+  return responseData.data.userId;
+};

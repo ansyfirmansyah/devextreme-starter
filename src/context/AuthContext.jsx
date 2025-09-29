@@ -3,6 +3,7 @@ import {
   logout as authServiceLogout,
 } from "../services/authService";
 import { eraseCookie, getCookie, setCookieAccessToken, setCookieRefreshToken } from "../services/cookieService";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -11,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("userData"); // Masih pakai localStorage untuk data non-sensitif
     return storedUser ? JSON.parse(storedUser) : null;
   });
+  const navigate = useNavigate();
 
   const login = (userData, accessToken, refreshToken) => {
     setCookieAccessToken(accessToken);
@@ -20,17 +22,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    const refreshToken = getCookie("refreshToken"); // <-- 1. Ambil refresh token dari cookie
+    // Ambil refresh token dari cookie
+    const refreshToken = getCookie("refreshToken");
 
-    // Panggil API logout, bahkan jika refresh token tidak ada (untuk membersihkan sisi klien)
-    await authServiceLogout(refreshToken);
+    // jika refresh token ada maka consume API logout (untuk di-remove di sisi backend)
+    if (refreshToken) {
+      await authServiceLogout(refreshToken);
+    }
 
-    // 2. Hapus semua cookie dan data lokal
+    // Hapus semua cookie dan data lokal
     eraseCookie("accessToken");
     eraseCookie("refreshToken");
     localStorage.removeItem("userData");
     setUser(null);
-    window.location.href = "/login";
+    
+    // Kembali ke halaman login
+    navigate("/login");
   };
 
   const value = { user, login, logout };

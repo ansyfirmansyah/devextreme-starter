@@ -74,5 +74,7 @@ export const API_ENDPOINTS = {
     login: `${API_BASE_URL}/auth/login`,
     logout: `${API_BASE_URL}/auth/logout`,
     refresh: `${API_BASE_URL}/auth/refresh`,
+    registerCheckDetails: `${API_BASE_URL}/auth/register/check-details`,
+    registerComplete: `${API_BASE_URL}/auth/register/complete`,
   },
 };

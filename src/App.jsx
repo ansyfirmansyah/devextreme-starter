@@ -13,6 +13,7 @@ import { navigationRoutes } from "./config/navigationConfig";
 import { NotFound, Privacy, Terms } from "./features/SamplePages";
 import HomePage from "./features/dashboard/HomePage";
 import LoginPage from "./features/auth/LoginPage";
+import RegisterPage from "./features/auth/RegisterPage";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 
 const App = () => {
@@ -38,8 +39,9 @@ const App = () => {
 
   return (
     <Routes>
-      {/* Rute untuk halaman login, di luar layout utama */}
+      {/* Rute untuk halaman login dan registrasi, di luar layout utama */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Rute-rute yang menggunakan MainLayout */}
       {/* Bungkus semua rute yang butuh login dengan ProtectedRoute */}

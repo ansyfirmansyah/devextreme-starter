@@ -16,6 +16,7 @@ import RealTimeClock from "./RealTimeClock";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../../context/AuthContext";
+import notify from "devextreme/ui/notify";
 
 /**
  * Fungsi rekursif untuk mencari nama menu aktif berdasarkan path saat ini.
