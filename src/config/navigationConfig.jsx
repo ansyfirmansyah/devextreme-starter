@@ -13,8 +13,8 @@ import OutletSummaryPage from "../features/reports/struk/OutletSummaryPage";
 import PenjualanPage from "../features/penjualan/PenjualanPage";
 import { ICONS } from "../components/icon/menuIcon";
 import HomePage from "../features/dashboard/HomePage";
+import RolesPage from "../features/role/RolesPage";
 
-// 1. Ubah struktur menjadi tree. Gunakan properti 'items' untuk sub-menu.
 export const navigationRoutes = [
   {
     id: 0,
@@ -22,6 +22,7 @@ export const navigationRoutes = [
     icon: ICONS.home,
     path: "/home",
     component: HomePage,
+    permissionCode: 'MENU_HOME' // Contoh hak akses
   },
   {
     id: 1,
@@ -29,6 +30,7 @@ export const navigationRoutes = [
     icon: ICONS.file,
     path: "/sample",
     component: CustomersPage,
+    permissionCode: 'MENU_SAMPLE'
   },
   {
     id: 2,
@@ -36,6 +38,7 @@ export const navigationRoutes = [
     icon: ICONS.outlets,
     path: "/outlets",
     component: OutletsPage,
+    permissionCode: 'MENU_OUTLETS'
   },
   {
     id: 3,
@@ -43,6 +46,7 @@ export const navigationRoutes = [
     icon: ICONS.sales,
     path: "/sales",
     component: SalesPage,
+    permissionCode: 'MENU_SALES'
   },
   {
     id: 4,
@@ -50,6 +54,7 @@ export const navigationRoutes = [
     icon: ICONS.box,
     path: "/klasifikasi",
     component: KlasifikasiPage,
+    permissionCode: 'MENU_KLASIFIKASI'
   },
   {
     id: 5,
@@ -57,6 +62,7 @@ export const navigationRoutes = [
     icon: ICONS.product,
     path: "/barang",
     component: BarangPage,
+    permissionCode: 'MENU_BARANG'
   },
   {
     id: 6,
@@ -64,14 +70,23 @@ export const navigationRoutes = [
     icon: ICONS.cart,
     path: "/penjualan",
     component: PenjualanPage,
+    permissionCode: 'MENU_PENJUALAN'
+  },
+  {
+    id: 7,
+    text: "Manajemen Role",
+    icon: ICONS.circleStack, // Sementara pakai ikon sales, bisa diganti
+    path: "/roles",
+    component: RolesPage,
+    permissionCode: 'MENU_ROLES'
   },
   {
     id: 999,
-    text: "Reports", // Menu ini tidak punya 'component', hanya sebagai folder
+    text: "Reports",
     icon: ICONS.reports,
-    expanded: false, // Kita bisa set defaultnya tertutup
+    expanded: false,
+    permissionCode: 'MENU_REPORTS', // Hak akses untuk menu induk
     items: [
-      // Ini adalah sub-menunya
       {
         id: 9991,
         parentId: 999,
@@ -79,6 +94,7 @@ export const navigationRoutes = [
         icon: ICONS.money,
         path: "/reports/struk-penjualan",
         component: StrukPenjualanPage,
+        permissionCode: 'MENU_REPORTS_STRUK'
       },
       {
         id: 9992,
@@ -87,6 +103,7 @@ export const navigationRoutes = [
         icon: ICONS.money,
         path: "/reports/outlet-summary",
         component: OutletSummaryPage,
+        permissionCode: 'MENU_REPORTS_OUTLET'
       },
     ],
   },

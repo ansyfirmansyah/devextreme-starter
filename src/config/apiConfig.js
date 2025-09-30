@@ -81,4 +81,11 @@ export const API_ENDPOINTS = {
     changePassword: `${API_BASE_URL}/account/change-password`,
     getProfile: `${API_BASE_URL}/account/profile`
   },
+  roles: {
+    get: `${API_BASE_URL}/roles/get`,
+    post: `${API_BASE_URL}/roles/post`,
+    put: `${API_BASE_URL}/roles/put`,
+    delete: `${API_BASE_URL}/roles/delete`,
+    modules: `${API_BASE_URL}/roles/modules`, // Untuk mengambil daftar hak akses
+  }
 };

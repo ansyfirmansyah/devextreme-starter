@@ -1,7 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { navigationRoutes } from '../../config/navigationConfig';
-import { ICONS } from '../icon/menuIcon';
+/**
+ * Sidebar.jsx
+ * -----------
+ * Komponen Sidebar untuk navigasi aplikasi.
+ *
+ * - Menampilkan menu dan sub-menu berdasarkan konfigurasi navigationRoutes.
+ * - Highlight menu aktif sesuai path saat ini.
+ * - Mendukung expand/collapse sub-menu.
+ * - Filter menu berdasarkan permission user.
+ * - Responsif terhadap perubahan path dan hak akses.
+ *
+ * Dependencies:
+ * - React Router (Link, useLocation)
+ * - navigationRoutes (config navigasi)
+ * - ICONS (ikon menu)
+ * - AuthContext (useAuth)
+ */
+
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { navigationRoutes } from "../../config/navigationConfig";
+import { ICONS } from "../icon/menuIcon";
+import { useAuth } from "../../context/AuthContext"; // <-- Import useAuth
 
 /**
  * Fungsi untuk mencari route aktif berdasarkan path saat ini.
@@ -14,9 +33,12 @@ const findActiveRoute = (items, path) => {
   const allRoutes = [];
   // Rekursif untuk flatten semua routes dan sub-routes
   const flattenRoutes = (routes, parent = null) => {
-    routes.forEach(route => {
+    routes.forEach((route) => {
       if (route.path) {
-        allRoutes.push({ ...route, parentId: parent ? parent.id : route.parentId });
+        allRoutes.push({
+          ...route,
+          parentId: parent ? parent.id : route.parentId,
+        });
       }
       if (route.items) {
         flattenRoutes(route.items, route);
@@ -25,10 +47,10 @@ const findActiveRoute = (items, path) => {
   };
 
   flattenRoutes(items);
-  
+
   // Urutkan agar path terpanjang dicek dulu (menghindari false positive)
   const sortedRoutes = allRoutes.sort((a, b) => b.path.length - a.path.length);
-  return sortedRoutes.find(route => path.startsWith(route.path));
+  return sortedRoutes.find((route) => path.startsWith(route.path));
 };
 
 /**
@@ -36,6 +58,7 @@ const findActiveRoute = (items, path) => {
  * Menampilkan menu, sub-menu, dan highlight menu aktif.
  */
 const Sidebar = ({ isOpen, onMouseEnter, onMouseLeave }) => {
+  const { user } = useAuth(); // Dapatkan data user (termasuk permissions)
   const location = useLocation();
   const [activeId, setActiveId] = useState(null); // ID menu aktif
   const [expandedItems, setExpandedItems] = useState({}); // State untuk sub-menu yang terbuka
@@ -49,7 +72,7 @@ const Sidebar = ({ isOpen, onMouseEnter, onMouseLeave }) => {
       setActiveId(activeRoute.id);
       // Jika menu aktif punya parent, expand parent-nya
       if (activeRoute.parentId) {
-        setExpandedItems(prev => ({ ...prev, [activeRoute.parentId]: true }));
+        setExpandedItems((prev) => ({ ...prev, [activeRoute.parentId]: true }));
       }
     } else {
       setActiveId(null);
@@ -62,7 +85,7 @@ const Sidebar = ({ isOpen, onMouseEnter, onMouseLeave }) => {
    */
   const handleItemClick = (item) => {
     if (item.items && item.items.length > 0) {
-      setExpandedItems(prev => ({ ...prev, [item.id]: !prev[item.id] }));
+      setExpandedItems((prev) => ({ ...prev, [item.id]: !prev[item.id] }));
     }
   };
 
@@ -72,75 +95,115 @@ const Sidebar = ({ isOpen, onMouseEnter, onMouseLeave }) => {
    * @returns {React.Node}
    */
   const renderMenuItems = (items) => {
-    return items.map((item) => {
+    // Filter menu berdasarkan hak akses pengguna
+    const filteredItems = items.filter((item) => {
+      if (!item.permissionCode) return true; // Tampilkan jika tidak butuh permission
+      return user?.permissions?.includes(item.permissionCode);
+    });
+
+    return filteredItems.map((item) => {
+      // Rekursif saring sub-menu juga
       const hasSubMenu = item.items && item.items.length > 0;
+      const visibleSubMenuItems = hasSubMenu
+        ? item.items.filter(
+            (sub) =>
+              !sub.permissionCode ||
+              user?.permissions?.includes(sub.permissionCode)
+          )
+        : [];
       const isExpanded = !!expandedItems[item.id];
       const isActive = item.id === activeId;
 
-      // Build className untuk item menu
+      // Kelas CSS untuk item menu
       const itemClasses = [
-        'group', 'flex', 'items-center', 'justify-between', 'w-full', 'h-12', 'px-4', 'my-1',
-        'rounded-lg', 'cursor-pointer', 'transition-colors', 'duration-200'
+        "group",
+        "flex",
+        "items-center",
+        "justify-between",
+        "w-full",
+        "h-12",
+        "px-4",
+        "my-1",
+        "rounded-lg",
+        "cursor-pointer",
+        "transition-colors",
+        "duration-200",
       ];
       if (isActive) {
-        itemClasses.push('bg-bi-slate-100');
+        itemClasses.push("bg-bi-slate-100");
       } else {
-        itemClasses.push('hover:bg-bi-slate-100');
+        itemClasses.push("hover:bg-bi-slate-100");
       }
 
-      // Build className untuk warna icon dan text
+      // Kelas warna untuk ikon dan teks
       const colorClasses = [
-        'transition-colors', 'duration-200',
-        isActive ? 'text-bi-blue-700' : 'text-bi-slate-600 group-hover:text-bi-blue-700'
+        "transition-colors",
+        "duration-200",
+        isActive
+          ? "text-bi-blue-700"
+          : "text-bi-slate-600 group-hover:text-bi-blue-700",
       ];
 
-      const iconClasses = ['w-5', 'h-5', 'shrink-0', ...colorClasses];
+      const iconClasses = ["w-5", "h-5", "shrink-0", ...colorClasses];
       const textClasses = [
-        'whitespace-nowrap', 'transition-opacity', 'duration-200', ...colorClasses
+        "whitespace-nowrap",
+        "transition-opacity",
+        "duration-200",
+        ...colorClasses,
       ];
       if (isActive) {
-        textClasses.push('font-semibold');
+        textClasses.push("font-semibold");
       }
 
-      // Isi menu: icon, text, dan arrow jika ada sub-menu
+      // Isi link/menu
       const linkContent = (
         <>
           <div className="flex items-center gap-4">
-            {React.cloneElement(item.icon, { 
-              className: iconClasses.join(' ')
+            {React.cloneElement(item.icon, {
+              className: iconClasses.join(" "),
             })}
             {isOpen && (
-              <span className={textClasses.join(' ')}>
-                {item.text}
-              </span>
+              <span className={textClasses.join(" ")}>{item.text}</span>
             )}
           </div>
-          {isOpen && hasSubMenu && (
-            <div className={`transform transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180' : ''} ${colorClasses.join(' ')}`}>
+          {isOpen && hasSubMenu && visibleSubMenuItems.length > 0 && (
+            <div
+              className={`transform transition-transform duration-300 ease-in-out ${
+                isExpanded ? "rotate-180" : ""
+              } ${colorClasses.join(" ")}`}
+            >
               {ICONS.arrow}
             </div>
           )}
         </>
       );
-      
+
       return (
         <React.Fragment key={item.id}>
-          {/* Jika ada path, gunakan Link. Jika tidak, div biasa */}
+          {/* Render link jika ada path, jika tidak render div */}
           {item.path ? (
-            <Link to={item.path} className={itemClasses.join(' ')} onClick={() => handleItemClick(item)}>
+            <Link
+              to={item.path}
+              className={itemClasses.join(" ")}
+              onClick={() => handleItemClick(item)}
+            >
               {linkContent}
             </Link>
           ) : (
-            <div className={itemClasses.join(' ')} onClick={() => handleItemClick(item)}>
+            <div
+              className={itemClasses.join(" ")}
+              onClick={() => handleItemClick(item)}
+            >
               {linkContent}
             </div>
           )}
-          {/* Render sub-menu jika ada dan sedang di-expand */}
-          {hasSubMenu && (
-             <div className={`submenu ${isExpanded && isOpen ? 'expanded' : ''}`}>
-               <div className="pt-1">
-                {renderMenuItems(item.items)}
-               </div>
+
+          {/* Render sub-menu jika ada dan terlihat */}
+          {hasSubMenu && visibleSubMenuItems.length > 0 && (
+            <div
+              className={`submenu ${isExpanded && isOpen ? "expanded" : ""}`}
+            >
+              <div className="pt-1">{renderMenuItems(item.items)}</div>
             </div>
           )}
         </React.Fragment>
@@ -149,15 +212,12 @@ const Sidebar = ({ isOpen, onMouseEnter, onMouseLeave }) => {
   };
 
   return (
-    <aside 
-      className={`sidebar ${isOpen ? 'expanded' : 'collapsed'}`}
+    <aside
+      className={`sidebar ${isOpen ? "expanded" : "collapsed"}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Navigasi utama sidebar */}
-      <nav className="p-2">
-        {renderMenuItems(navigationRoutes)}
-      </nav>
+      <nav className="p-2">{renderMenuItems(navigationRoutes)}</nav>
     </aside>
   );
 };
