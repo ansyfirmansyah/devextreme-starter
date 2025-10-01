@@ -19,6 +19,8 @@ import {
   renderHeader,
 } from "../../../components/ui/GridCellRenderers";
 import { GridHeaderWithUpload } from "../../../components/ui/GridHeader";
+import { navigationRoutes } from "../../../config/navigationConfig";
+import { useMemo } from "react";
 
 /**
  * Komponen grid utama untuk fitur Penjualan.
@@ -32,6 +34,11 @@ const PenjualanGrid = () => {
   const [penjualanDataSource] = useState(() => new DataSource(penjualanStore));
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(() => 
+    navigationRoutes.find(route => route.path === "/penjualan")?.permissions || {}, 
+  []);
 
   // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
   const [currentPageIndex, setCurrentPageIndex] = useState(
@@ -85,6 +92,8 @@ const PenjualanGrid = () => {
         onView={() => handleView(data.jualh_id)}
         onEdit={() => handleEdit(data.jualh_id)}
         onDelete={() => handleDelete(data.jualh_id)}
+        editPermissionCode={permissions.edit}
+        deletePermissionCode={permissions.delete}
       />
     );
   };
@@ -104,8 +113,10 @@ const PenjualanGrid = () => {
           title="Penjualan"
           buttonText="Add Penjualan"
           onButtonClick={handleAdd}
+          addPermissionCode={permissions.create}
           buttonTextUpload="Upload Penjualan"
           onButtonClickUpload={handleUpload}
+          uploadPermissionCode={permissions.upload}
         />
         {/* Panel pencarian */}
         <SearchPanel visible={true} width={240} placeholder="Search..." />
@@ -113,7 +124,7 @@ const PenjualanGrid = () => {
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
         {/* Paging dan Pager */}
-        <Paging defaultPageSize={5} pageIndex={currentPageIndex} />
+        <Paging defaultPageSize={10} pageIndex={currentPageIndex} />
         <Pager
           showPageSizeSelector={true}
           allowedPageSizes={[5, 10, 20]}

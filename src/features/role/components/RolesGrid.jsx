@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataGrid, {
   Column,
@@ -16,14 +16,25 @@ import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import { roleStore } from "../../../services/roleService";
 import { renderHeader } from "../../../components/ui/GridCellRenderers";
+import { navigationRoutes } from "../../../config/navigationConfig";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 const RolesGrid = () => {
   const [roleDataSource] = useState(() => new DataSource(roleStore));
   const navigate = useNavigate();
 
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/roles")
+        ?.permissions || {},
+    []
+  );
+  const { hasPermission } = usePermissions();
+
   const handleAdd = () => navigate("new");
-  const handleView = (id) => navigate(`${id}`); 
-  const handleEdit = (id) => navigate(`${id}/edit`); 
+  const handleView = (id) => navigate(`${id}`);
+  const handleEdit = (id) => navigate(`${id}/edit`);
   const handleDelete = async (id) => {
     const result = await confirm(
       "Apakah Anda yakin ingin menghapus role ini?",
@@ -45,6 +56,8 @@ const RolesGrid = () => {
         onView={() => handleView(data.roleId)}
         onEdit={() => handleEdit(data.roleId)}
         onDelete={() => handleDelete(data.roleId)}
+        editPermissionCode={permissions.edit}
+        deletePermissionCode={permissions.delete}
       />
     );
   };
@@ -62,6 +75,7 @@ const RolesGrid = () => {
           title="Manajemen Role"
           buttonText="Tambah Role"
           onButtonClick={handleAdd}
+          addPermissionCode={permissions.create}
         />
         <SearchPanel visible={true} width={240} placeholder="Cari..." />
         <FilterRow visible={true} />
@@ -72,8 +86,16 @@ const RolesGrid = () => {
           allowedPageSizes={[5, 10, 20]}
           showInfo={true}
         />
-        <Column dataField="roleId" caption="Role ID" headerCellRender={() => renderHeader("Role")}/>
-        <Column dataField="roleCatatan" caption="Catatan" headerCellRender={() => renderHeader("Description")}/>
+        <Column
+          dataField="roleId"
+          caption="Role ID"
+          headerCellRender={() => renderHeader("Role")}
+        />
+        <Column
+          dataField="roleCatatan"
+          caption="Catatan"
+          headerCellRender={() => renderHeader("Description")}
+        />
         <Column
           caption="Aksi"
           width={120}

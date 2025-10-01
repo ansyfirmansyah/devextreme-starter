@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // 1. Perbaiki impor: Semua komponen terkait TreeList diimpor dari 'devextreme-react/tree-list'
 import {
@@ -18,6 +18,7 @@ import DataSource from "devextreme/data/data_source";
 import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import { klasifikasiStore } from "../../../services/klasifikasiService";
+import { navigationRoutes } from "../../../config/navigationConfig";
 
 const KlasifikasiGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -27,6 +28,14 @@ const KlasifikasiGrid = () => {
     () => new DataSource(klasifikasiStore)
   );
   const navigate = useNavigate();
+
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/klasifikasi")
+        ?.permissions || {},
+    []
+  );
 
   /* Handler untuk tombol Add, View, Edit, Delete */
   const handleAdd = () => navigate("new");
@@ -54,6 +63,8 @@ const KlasifikasiGrid = () => {
         onView={() => handleView(data.klas_id)}
         onEdit={() => handleEdit(data.klas_id)}
         onDelete={() => handleDelete(data.klas_id)}
+        editPermissionCode={permissions.edit}
+        deletePermissionCode={permissions.delete}
       />
     );
   };
@@ -74,6 +85,7 @@ const KlasifikasiGrid = () => {
           title="Klasifikasi Management"
           buttonText="Add Klasifikasi"
           onButtonClick={handleAdd}
+          addPermissionCode={permissions.create}
         />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />

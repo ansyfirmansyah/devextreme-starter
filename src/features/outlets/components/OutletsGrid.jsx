@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import DataGrid, {
   Column,
   Paging,
@@ -19,11 +19,22 @@ import DataSource from "devextreme/data/data_source";
 import SalesDetailGrid from "./SalesDetailGrid";
 import { outletStore } from "../../../services/outletService";
 import { GridHeaderWithAddInMenu } from "../../../components/ui/GridHeader";
+import { navigationRoutes } from "../../../config/navigationConfig";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 const OutletsGrid = ({ onViewClick }) => {
   // init data source sekali saja karena untuk kebutuhan datagrid
   // sehingga bisa cek kondisi terkini, misal: halaman yang saat ini dibuka
   const [outletDataSource] = useState(() => new DataSource(outletStore));
+
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/outlets")
+        ?.permissions || {},
+    []
+  );
+  const { hasPermission } = usePermissions();
 
   const onRowExpanding = useCallback((e) => {
     e.component.collapseAll(-1);
@@ -39,7 +50,10 @@ const OutletsGrid = ({ onViewClick }) => {
         remoteOperations={true} // Flag untuk memberitahu grid agar semua operasi (pagination, filter, sorting) dilakukan di server.
         onRowExpanding={onRowExpanding}
       >
-        <GridHeaderWithAddInMenu title="Outlets" />
+        <GridHeaderWithAddInMenu
+          title="Outlets"
+          addPermissionCode={permissions.create}
+        />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
@@ -52,9 +66,9 @@ const OutletsGrid = ({ onViewClick }) => {
 
         <Editing
           mode="popup"
-          allowAdding={true}
-          allowUpdating={true}
-          allowDeleting={true}
+          allowAdding={hasPermission(permissions.create)}
+          allowUpdating={hasPermission(permissions.edit)}
+          allowDeleting={hasPermission(permissions.delete)}
           useIcons={true}
           popup={{
             title: "Outlet Info",

@@ -22,7 +22,7 @@ export const navigationRoutes = [
     icon: ICONS.home,
     path: "/home",
     component: HomePage,
-    permissionCode: 'MENU_HOME' // Contoh hak akses
+    permissionCode: "MENU_HOME", // Contoh hak akses
   },
   {
     id: 1,
@@ -30,7 +30,7 @@ export const navigationRoutes = [
     icon: ICONS.file,
     path: "/sample",
     component: CustomersPage,
-    permissionCode: 'MENU_SAMPLE'
+    permissionCode: "MENU_SAMPLE",
   },
   {
     id: 2,
@@ -38,7 +38,12 @@ export const navigationRoutes = [
     icon: ICONS.outlets,
     path: "/outlets",
     component: OutletsPage,
-    permissionCode: 'MENU_OUTLETS'
+    permissionCode: "MENU_OUTLETS",
+    permissions: {
+      create: "OUTLET_CREATE",
+      edit: "OUTLET_EDIT",
+      delete: "OUTLET_DELETE",
+    },
   },
   {
     id: 3,
@@ -46,7 +51,13 @@ export const navigationRoutes = [
     icon: ICONS.sales,
     path: "/sales",
     component: SalesPage,
-    permissionCode: 'MENU_SALES'
+    permissionCode: "MENU_SALES",
+    permissions: {
+      create: "SALES_CREATE",
+      edit: "SALES_EDIT",
+      delete: "SALES_DELETE",
+      upload: "SALES_UPLOAD",
+    },
   },
   {
     id: 4,
@@ -54,7 +65,12 @@ export const navigationRoutes = [
     icon: ICONS.box,
     path: "/klasifikasi",
     component: KlasifikasiPage,
-    permissionCode: 'MENU_KLASIFIKASI'
+    permissionCode: "MENU_KLASIFIKASI",
+    permissions: {
+      create: "KLASIFIKASI_CREATE",
+      edit: "KLASIFIKASI_EDIT",
+      delete: "KLASIFIKASI_DELETE",
+    },
   },
   {
     id: 5,
@@ -62,7 +78,12 @@ export const navigationRoutes = [
     icon: ICONS.product,
     path: "/barang",
     component: BarangPage,
-    permissionCode: 'MENU_BARANG'
+    permissionCode: "MENU_BARANG",
+    permissions: {
+      create: "BARANG_CREATE",
+      edit: "BARANG_EDIT",
+      delete: "BARANG_DELETE",
+    },
   },
   {
     id: 6,
@@ -70,22 +91,33 @@ export const navigationRoutes = [
     icon: ICONS.cart,
     path: "/penjualan",
     component: PenjualanPage,
-    permissionCode: 'MENU_PENJUALAN'
+    permissionCode: "MENU_PENJUALAN",
+    permissions: {
+      create: "PENJUALAN_CREATE",
+      edit: "PENJUALAN_EDIT",
+      delete: "PENJUALAN_DELETE",
+      upload: "PENJUALAN_UPLOAD",
+    },
   },
   {
     id: 7,
     text: "Manajemen Role",
-    icon: ICONS.circleStack, // Sementara pakai ikon sales, bisa diganti
+    icon: ICONS.circleStack,
     path: "/roles",
     component: RolesPage,
-    permissionCode: 'MENU_ROLES'
+    permissionCode: "MENU_ROLES",
+    permissions: {
+      create: "ROLES_CREATE",
+      edit: "ROLES_EDIT",
+      delete: "ROLES_DELETE",
+    },
   },
   {
     id: 999,
     text: "Reports",
     icon: ICONS.reports,
     expanded: false,
-    permissionCode: 'MENU_REPORTS', // Hak akses untuk menu induk
+    permissionCode: "MENU_REPORTS", // Hak akses untuk menu induk
     items: [
       {
         id: 9991,
@@ -94,7 +126,7 @@ export const navigationRoutes = [
         icon: ICONS.money,
         path: "/reports/struk-penjualan",
         component: StrukPenjualanPage,
-        permissionCode: 'MENU_REPORTS_STRUK'
+        permissionCode: "MENU_REPORTS_STRUK",
       },
       {
         id: 9992,
@@ -103,7 +135,7 @@ export const navigationRoutes = [
         icon: ICONS.money,
         path: "/reports/outlet-summary",
         component: OutletSummaryPage,
-        permissionCode: 'MENU_REPORTS_OUTLET'
+        permissionCode: "MENU_REPORTS_OUTLET",
       },
     ],
   },

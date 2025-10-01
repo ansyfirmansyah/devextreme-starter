@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import DataGrid, {
   Column,
   Paging,
@@ -17,6 +17,7 @@ import PageHeader from "../../../components/ui/GridHeader";
 import ActionCell from "../../../components/ui/ActionCell";
 import DetailGrid from "./DetailGrid";
 import { barangStore } from "../../../services/barangService";
+import { navigationRoutes } from "../../../config/navigationConfig";
 
 const BarangGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -24,6 +25,14 @@ const BarangGrid = () => {
   // yang bisa menyebabkan masalah pada DataGrid
   const [barangDataSource] = useState(() => new DataSource(barangStore));
   const navigate = useNavigate();
+
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/barang")
+        ?.permissions || {},
+    []
+  );
 
   /* Handler untuk tombol Add, View, Edit, Delete */
   const handleAdd = () => navigate("new");
@@ -51,6 +60,8 @@ const BarangGrid = () => {
         onView={() => handleView(data.barang_id)}
         onEdit={() => handleEdit(data.barang_id)}
         onDelete={() => handleDelete(data.barang_id)}
+        editPermissionCode={permissions.edit}
+        deletePermissionCode={permissions.delete}
       />
     );
   };
@@ -69,6 +80,7 @@ const BarangGrid = () => {
           title="Master Barang"
           buttonText="Add Barang"
           onButtonClick={handleAdd}
+          addPermissionCode={permissions.create}
         />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />

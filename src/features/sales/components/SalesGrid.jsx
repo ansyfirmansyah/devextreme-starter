@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DataGrid, {
   Column,
@@ -15,6 +15,7 @@ import DataSource from "devextreme/data/data_source";
 import ActionCell from "../../../components/ui/ActionCell";
 import { salesStore } from "../../../services/salesService";
 import { GridHeaderWithUpload } from "../../../components/ui/GridHeader";
+import { navigationRoutes } from "../../../config/navigationConfig";
 
 const SalesGrid = () => {
   // Gunakan useState untuk membuat DataSource sekali saja
@@ -23,6 +24,14 @@ const SalesGrid = () => {
   const [salesDataSource] = useState(() => new DataSource(salesStore));
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/sales")?.permissions ||
+      {},
+    []
+  );
 
   // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
   const [currentPageIndex, setCurrentPageIndex] = useState(
@@ -40,7 +49,8 @@ const SalesGrid = () => {
   };
 
   /* Handler untuk tombol Add, View, Edit, Delete */
-  const handleAdd = () => navigate("new", { state: { pageIndex: currentPageIndex } });
+  const handleAdd = () =>
+    navigate("new", { state: { pageIndex: currentPageIndex } });
   const handleUpload = () => navigate("upload");
   const handleView = (id) => {
     // Simpan pageIndex ke state saat navigasi ke detail
@@ -72,6 +82,8 @@ const SalesGrid = () => {
         onView={() => handleView(data.sales_id)}
         onEdit={() => handleEdit(data.sales_id)}
         onDelete={() => handleDelete(data.sales_id)}
+        editPermissionCode={permissions.edit}
+        deletePermissionCode={permissions.delete}
       />
     );
   };
@@ -93,6 +105,8 @@ const SalesGrid = () => {
           onButtonClick={handleAdd}
           buttonTextUpload="Upload Sales"
           onButtonClickUpload={handleUpload}
+          addPermissionCode={permissions.create}
+          uploadPermissionCode={permissions.upload}
         />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
