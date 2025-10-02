@@ -7,7 +7,7 @@ export const renderHeader = (text) => {
   );
 };
 
-// [BARU] Fungsi untuk merender sel tanggal dengan warna kondisional
+// Fungsi untuk merender sel tanggal dengan warna kondisional
 export const renderDateCell = (cellData) => {
   if (!cellData.value) return null;
 
@@ -48,6 +48,39 @@ export const renderDateCell = (cellData) => {
   return (
     <div className={`px-3 py-1 text-xs font-semibold rounded-md inline-block ${colorClasses}`}>
       {formattedDate}
+    </div>
+  );
+};
+
+// Fungsi untuk merender sel status dengan warna kondisional
+export const renderContactStatusCell = (cellData) => {
+  if (!cellData.value) return null;
+
+  let colorClasses = "";
+
+  switch (cellData.value.toLowerCase()) {
+    case "baru":
+      colorClasses = "bg-blue-100 text-blue-800"; // Biru untuk status baru
+      break;
+    case "prospek":
+      colorClasses = "bg-green-100 text-green-800"; // Hijau untuk status prospek
+      break;
+    case "sudah dihubungi":
+      colorClasses = "bg-yellow-100 text-yellow-800"; // Kuning untuk status sudah dihubungi
+      break;
+    case "tidak tertarik":
+      colorClasses = "bg-red-100 text-red-800"; // Merah untuk status diblokir
+      break;
+    case "klien":
+      colorClasses = "bg-purple-100 text-purple-800"; // Ungu untuk status klien
+      break;
+    default:
+      colorClasses = "bg-black-100 text-white-800"; // status lainnya
+  }
+
+  return (
+    <div className={`px-3 py-1 text-xs font-semibold rounded-md inline-block ${colorClasses}`}>
+      {cellData.value}
     </div>
   );
 };

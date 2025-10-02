@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import DataGrid, {
   Column,
   Paging,
@@ -23,7 +23,45 @@ const SalesGrid = () => {
   // yang bisa menyebabkan masalah pada DataGrid
   const [salesDataSource] = useState(() => new DataSource(salesStore));
   const navigate = useNavigate();
-  const location = useLocation();
+
+  // Gunakan useSearchParams untuk interaksi dengan URL query params
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Fungsi untuk membaca page index dari URL saat komponen pertama kali dimuat
+  const getInitialPageIndex = () => {
+    const pageParam = searchParams.get("page");
+    const pageNumber = parseInt(pageParam, 10);
+    // URL menggunakan page=1, page=2, sedangkan DataGrid 0-indexed
+    return !isNaN(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
+  };
+
+  // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
+  const [currentPageIndex, setCurrentPageIndex] = useState(getInitialPageIndex);
+  useEffect(() => {
+    const pageParam = searchParams.get("page");
+    // Parse pageParam menjadi integer, 10 adalah radix untuk desimal agar tidak menjadi oktal atau hex
+    const pageNumber = parseInt(pageParam, 10);
+    const pageIndexFromUrl =
+      !isNaN(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
+
+    // Sinkronkan state komponen jika berbeda dengan URL
+    if (pageIndexFromUrl !== currentPageIndex) {
+      setCurrentPageIndex(pageIndexFromUrl);
+    }
+  }, [searchParams]); // Efek ini akan berjalan setiap kali query parameter URL berubah
+
+  /**
+   * Handler untuk sinkronisasi page index saat halaman di grid berubah.
+   * Disimpan ke state agar bisa dikembalikan saat navigasi.
+   */
+  const handleOptionChange = (e) => {
+    if (e.fullName === "paging.pageIndex") {
+      const newPageIndex = e.value;
+      setCurrentPageIndex(newPageIndex);
+      // Update URL. Tambah 1 agar URL lebih user-friendly (page=1, page=2, dst.)
+      setSearchParams({ page: (newPageIndex + 1).toString() });
+    }
+  };
 
   // Ambil permissions dari navigationConfig
   const permissions = useMemo(
@@ -33,33 +71,11 @@ const SalesGrid = () => {
     []
   );
 
-  // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
-  const [currentPageIndex, setCurrentPageIndex] = useState(
-    location.state?.pageIndex || 0
-  );
-
-  /**
-   * Handler untuk sinkronisasi page index saat halaman di grid berubah.
-   * Disimpan ke state agar bisa dikembalikan saat navigasi.
-   */
-  const handleOptionChange = (e) => {
-    if (e.fullName === "paging.pageIndex") {
-      setCurrentPageIndex(e.value);
-    }
-  };
-
   /* Handler untuk tombol Add, View, Edit, Delete */
-  const handleAdd = () =>
-    navigate("new", { state: { pageIndex: currentPageIndex } });
+  const handleAdd = () => navigate("new");
+  const handleView = (id) => navigate(`${id}`);
+  const handleEdit = (id) => navigate(`${id}/edit`);
   const handleUpload = () => navigate("upload");
-  const handleView = (id) => {
-    // Simpan pageIndex ke state saat navigasi ke detail
-    navigate(`${id}`, { state: { pageIndex: currentPageIndex } });
-  };
-  const handleEdit = (id) => {
-    // Simpan pageIndex ke state saat navigasi ke edit
-    navigate(`${id}/edit`, { state: { pageIndex: currentPageIndex } });
-  };
   const handleDelete = async (id) => {
     const result = await confirm(
       "Are you sure you want to delete this data?",
@@ -111,7 +127,7 @@ const SalesGrid = () => {
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
-        <Paging defaultPageSize={10} pageIndex={currentPageIndex} />
+        <Paging defaultPageSize={5} pageIndex={currentPageIndex} />
         <Pager
           showPageSizeSelector={true}
           allowedPageSizes={[5, 10, 20]}

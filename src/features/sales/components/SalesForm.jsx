@@ -67,11 +67,11 @@ const SalesForm = () => {
   // Data source untuk dropdown Outlet di form
   const outletDataSource = useMemo(() => getOutletLookupStore(), [id]);
 
-  // Handler untuk kembali ke halaman grid
+  // Handler untuk tombol Cancel / Back, -1 artinya kembali ke halaman sebelumnya sesuai history browser
+  // useCallback agar tidak terjadi infinite loop pada useEffect di parent component
   const handleCancel = useCallback(() => {
-    // Saat kembali ke /penjualan, sertakan kembali state yang tadi diterima
-    navigate("/sales", { state: { pageIndex: location.state?.pageIndex } });
-  }, [navigate, location.state]);
+    navigate(-1);
+  }, [navigate]);
 
   // Handler untuk submit form
   const handleSubmit = async (e) => {

@@ -117,11 +117,11 @@ const PenjualanForm = () => {
     setFormData({ ...formData, outlet_id: e.value });
   };
 
-  // Handler untuk kembali ke halaman grid
+  // Handler untuk tombol Cancel / Back, -1 artinya kembali ke halaman sebelumnya sesuai history browser
+  // useCallback agar tidak terjadi infinite loop pada useEffect di parent component
   const handleCancel = useCallback(() => {
-    // Saat kembali ke /penjualan, sertakan kembali state yang tadi diterima
-    navigate("/penjualan", { state: { pageIndex: location.state?.pageIndex } });
-  }, [navigate, location.state]);
+    navigate(-1);
+  }, [navigate]);
 
   // Handler untuk submit form
   const handleSubmit = async (e) => {
@@ -172,10 +172,7 @@ const PenjualanForm = () => {
           readOnly={isReadOnly}
         >
           <GroupItem caption="Header" colCount={4}>
-            <SimpleItem
-              dataField="jualh_kode"
-              label={{ text: "Kode" }}
-            >
+            <SimpleItem dataField="jualh_kode" label={{ text: "Kode" }}>
               <RequiredRule />
               <StringLengthRule max={10} message="Kode max 10 karakter" />
             </SimpleItem>

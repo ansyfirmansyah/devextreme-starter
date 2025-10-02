@@ -87,5 +87,15 @@ export const API_ENDPOINTS = {
     put: `${API_BASE_URL}/roles/put`,
     delete: `${API_BASE_URL}/roles/delete`,
     modules: `${API_BASE_URL}/roles/modules`, // Untuk mengambil daftar hak akses
+  },
+  contacts: {
+    get: `${API_BASE_URL}/contacts/get`,
+    post: `${API_BASE_URL}/contacts/post`,
+    put: `${API_BASE_URL}/contacts/put`,
+    delete: `${API_BASE_URL}/contacts/delete`,
+    countries: `${API_BASE_URL}/contacts/countries`, // Untuk dropdown negara
+    cities: `${API_BASE_URL}/contacts/cities`, // Untuk dropdown kota
+    leadSources: `${API_BASE_URL}/contacts/lead-sources`, // Untuk dropdown sumber lead
+    statuses: `${API_BASE_URL}/contacts/statuses`, // Untuk dropdown status
   }
 };

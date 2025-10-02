@@ -14,6 +14,7 @@ import PenjualanPage from "../features/penjualan/PenjualanPage";
 import { ICONS } from "../components/icon/menuIcon";
 import HomePage from "../features/dashboard/HomePage";
 import RolesPage from "../features/role/RolesPage";
+import ContactPage from "../features/contact/ContactPage";
 
 export const navigationRoutes = [
   {
@@ -61,7 +62,7 @@ export const navigationRoutes = [
   },
   {
     id: 4,
-    text: "Klasifikasi Barang",
+    text: "Product Classification",
     icon: ICONS.box,
     path: "/klasifikasi",
     component: KlasifikasiPage,
@@ -74,7 +75,7 @@ export const navigationRoutes = [
   },
   {
     id: 5,
-    text: "Master Barang",
+    text: "Products",
     icon: ICONS.product,
     path: "/barang",
     component: BarangPage,
@@ -87,7 +88,7 @@ export const navigationRoutes = [
   },
   {
     id: 6,
-    text: "Penjualan",
+    text: "Transactions",
     icon: ICONS.cart,
     path: "/penjualan",
     component: PenjualanPage,
@@ -101,7 +102,20 @@ export const navigationRoutes = [
   },
   {
     id: 7,
-    text: "Manajemen Role",
+    text: "Contacts",
+    icon: ICONS.contacts,
+    path: "/contacts",
+    component: ContactPage,
+    permissionCode: "MENU_CONTACTS",
+    permissions: {
+      create: "CONTACT_CREATE",
+      edit: "CONTACT_EDIT",
+      delete: "CONTACT_DELETE",
+    },
+  },
+  {
+    id: 8,
+    text: "Role Management",
     icon: ICONS.circleStack,
     path: "/roles",
     component: RolesPage,
@@ -122,7 +136,7 @@ export const navigationRoutes = [
       {
         id: 9991,
         parentId: 999,
-        text: "Struk Penjualan",
+        text: "Transaction Receipts",
         icon: ICONS.money,
         path: "/reports/struk-penjualan",
         component: StrukPenjualanPage,

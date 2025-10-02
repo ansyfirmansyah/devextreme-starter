@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import DataSource from "devextreme/data/data_source";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMemo } from "react";
 import DataGrid, {
   Column,
   Paging,
@@ -7,32 +10,24 @@ import DataGrid, {
   HeaderFilter,
   Pager,
 } from "devextreme-react/data-grid";
-import notify from "devextreme/ui/notify";
-import DataSource from "devextreme/data/data_source";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { confirm } from "devextreme/ui/dialog";
 
-import ActionCell from "../../../components/ui/ActionCell";
-import { penjualanStore } from "../../../services/penjualanService";
+import { contactStore } from "../../../services/contactService";
+import { navigationRoutes } from "../../../config/navigationConfig";
+import GridHeader from "../../../components/ui/GridHeader";
 import {
+  renderContactStatusCell,
   renderDateCell,
   renderHeader,
 } from "../../../components/ui/GridCellRenderers";
-import { GridHeaderWithUpload } from "../../../components/ui/GridHeader";
-import { navigationRoutes } from "../../../config/navigationConfig";
-import { useMemo } from "react";
+import ActionCell from "../../../components/ui/ActionCell";
+import notify from "devextreme/ui/notify";
 import { useEffect } from "react";
 
-/**
- * Komponen grid utama untuk fitur Penjualan.
- * Menampilkan data penjualan dalam bentuk tabel dengan fitur:
- * - Paging, filtering, search, dan header filter
- * - Tombol aksi (Add, Upload, View, Edit, Delete)
- * - Sinkronisasi page index saat navigasi
- */
-const PenjualanGrid = () => {
-  // DataSource hanya dibuat sekali untuk mencegah masalah pada DataGrid
-  const [penjualanDataSource] = useState(() => new DataSource(penjualanStore));
+const ContactGrid = () => {
+  // Gunakan useState untuk membuat DataSource sekali saja
+  // Ini mencegah pembuatan ulang DataSource pada setiap render
+  // yang bisa menyebabkan masalah pada DataGrid
+  const [contactDataSource] = useState(() => new DataSource(contactStore));
   const navigate = useNavigate();
 
   // Gunakan useSearchParams untuk interaksi dengan URL query params
@@ -46,14 +41,21 @@ const PenjualanGrid = () => {
     return !isNaN(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
   };
 
+  // Ambil permissions dari navigationConfig
+  const permissions = useMemo(
+    () =>
+      navigationRoutes.find((route) => route.path === "/contacts")
+        ?.permissions || {},
+    []
+  );
+
   // State untuk menyimpan page index terakhir (agar tetap di halaman yang sama saat kembali)
   const [currentPageIndex, setCurrentPageIndex] = useState(getInitialPageIndex);
   useEffect(() => {
-    const pageParam = searchParams.get("page");
+    const pageParam = searchParams.get('page');
     // Parse pageParam menjadi integer, 10 adalah radix untuk desimal agar tidak menjadi oktal atau hex
     const pageNumber = parseInt(pageParam, 10);
-    const pageIndexFromUrl =
-      !isNaN(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
+    const pageIndexFromUrl = !isNaN(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
 
     // Sinkronkan state komponen jika berbeda dengan URL
     if (pageIndexFromUrl !== currentPageIndex) {
@@ -74,45 +76,32 @@ const PenjualanGrid = () => {
     }
   };
 
-  // Ambil permissions dari navigationConfig
-  const permissions = useMemo(
-    () =>
-      navigationRoutes.find((route) => route.path === "/penjualan")
-        ?.permissions || {},
-    []
-  );
-
-  // Handler untuk tombol aksi grid
+  /* Handler untuk tombol Add, View, Edit, Delete */
   const handleAdd = () => navigate("new");
   const handleView = (id) => navigate(`${id}`);
   const handleEdit = (id) => navigate(`${id}/edit`);
-  const handleUpload = () => navigate("upload");
   const handleDelete = async (id) => {
-    // Konfirmasi sebelum hapus data
     const result = await confirm(
-      "Are you sure you want to delete this data?",
-      "Confirm Deletion"
+      "Apakah Anda yakin ingin menghapus kontak ini?",
+      "Konfirmasi Hapus"
     );
     if (result) {
       try {
-        await penjualanStore.remove(id);
-        await penjualanDataSource.reload();
+        await contactStore.remove(id);
+        await contactDataSource.reload();
       } catch (err) {
-        notify(err?.message || "Failed to delete data.", "error", 3000);
+        notify(err?.message || "Gagal menghapus data.", "error", 3000);
       }
     }
   };
 
-  /**
-   * Render cell untuk kolom aksi (view, edit, delete).
-   * Dikirim ke komponen ActionCell.
-   */
+  // Render fungsi khusus untuk kolom Actions
   const renderActionCell = ({ data }) => {
     return (
       <ActionCell
-        onView={() => handleView(data.jualh_id)}
-        onEdit={() => handleEdit(data.jualh_id)}
-        onDelete={() => handleDelete(data.jualh_id)}
+        onView={() => handleView(data.contact_id)}
+        onEdit={() => handleEdit(data.contact_id)}
+        onDelete={() => handleDelete(data.contact_id)}
         editPermissionCode={permissions.edit}
         deletePermissionCode={permissions.delete}
       />
@@ -122,59 +111,58 @@ const PenjualanGrid = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm">
       <DataGrid
-        dataSource={penjualanDataSource}
+        dataSource={contactDataSource}
         height="100%"
-        showBorders={false}
+        showBorders={true}
         rowAlternationEnabled={true}
         remoteOperations={true}
         onOptionChanged={handleOptionChange}
       >
-        {/* Header grid dengan tombol Add dan Upload */}
-        <GridHeaderWithUpload
-          title="Penjualan"
-          buttonText="Add Penjualan"
+        // Header grid dengan tombol Add
+        <GridHeader
+          title="Contacts"
+          buttonText="Add Contact"
           onButtonClick={handleAdd}
           addPermissionCode={permissions.create}
-          buttonTextUpload="Upload Penjualan"
-          onButtonClickUpload={handleUpload}
-          uploadPermissionCode={permissions.upload}
         />
-        {/* Panel pencarian */}
         <SearchPanel visible={true} width={240} placeholder="Search..." />
-        {/* Filter baris dan header */}
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />
-        {/* Paging dan Pager */}
+        // Pagination dengan sinkronisasi ke URL
         <Paging defaultPageSize={5} pageIndex={currentPageIndex} />
         <Pager
           showPageSizeSelector={true}
           allowedPageSizes={[5, 10, 20]}
           showInfo={true}
         />
-        {/* Kolom-kolom utama */}
         <Column
-          dataField="jualh_kode"
-          caption="Kode"
-          headerCellRender={() => renderHeader("Kode")}
-        />
+          dataField="full_name"
+          caption="Nama"
+          headerCellRender={() => renderHeader("Nama")}
+        ></Column>
         <Column
-          dataField="jualh_date"
-          caption="Tanggal Penjualan"
+          dataField="email"
+          caption="Email"
+          headerCellRender={() => renderHeader("Email")}
+        ></Column>
+        <Column
+          dataField="company"
+          caption="Company"
+          headerCellRender={() => renderHeader("Company")}
+        ></Column>
+        <Column
+          dataField="date_added"
+          caption="Tanggal Didaftarkan"
           dataType="date"
           cellRender={renderDateCell}
-          headerCellRender={() => renderHeader("Tanggal Penjualan")}
+          headerCellRender={() => renderHeader("Tanggal Didaftarkan")}
         />
         <Column
-          dataField="outlet_display"
-          caption="Outlet"
-          headerCellRender={() => renderHeader("Outlet")}
-        />
-        <Column
-          dataField="sales_display"
-          caption="Sales"
-          headerCellRender={() => renderHeader("Sales")}
-        />
-        {/* Kolom aksi */}
+          dataField="contact_status_name"
+          caption="Status"
+          cellRender={renderContactStatusCell}
+          headerCellRender={() => renderHeader("Status")}
+        ></Column>
         <Column
           caption="Actions"
           width={120}
@@ -189,4 +177,4 @@ const PenjualanGrid = () => {
   );
 };
 
-export default PenjualanGrid;
+export default ContactGrid;
