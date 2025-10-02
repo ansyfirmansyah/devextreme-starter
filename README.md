@@ -9,4 +9,4 @@
 
 ## Build dan run aplikasi:
 1. pnpm build
-2. pnpm preview (jika ingin dijalankan dengan random port) atau npx serve dist (jika ingin dijalankan dari package serve sesuai port vite)
+2. pnpm preview (jika ingin dijalankan dengan random port) atau npx serve -s dist (jika ingin dijalankan dari package serve sesuai port vite)

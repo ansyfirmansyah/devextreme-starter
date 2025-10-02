@@ -25,7 +25,7 @@ import MainLayout from "./components/ui/MainLayout";
 import { navigationRoutes } from "./config/navigationConfig";
 
 // Impor halaman default
-import { NotFound, Privacy, Terms } from "./features/SamplePages";
+import { Privacy, Terms } from "./features/SamplePages";
 import LoginPage from "./features/auth/LoginPage";
 import RegisterPage from "./features/auth/RegisterPage";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
@@ -34,6 +34,7 @@ import UserProfilePage from "./features/account/UserProfilePage";
 import LandingPage from "./features/dashboard/LandingPage";
 import PermissionRoute from "./components/ui/PermissionRoute";
 import UnauthorizedPage from "./components/ui/UnauthorizedPage";
+import NotFoundPage from "./components/ui/NotFoundPage";
 
 const App = () => {
   // Helper rekursif untuk me-render rute dari konfigurasi
@@ -91,7 +92,7 @@ const App = () => {
         {/* Halaman khusus untuk akses ditolak */}
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         {/* Fallback route untuk halaman yang tidak ditemukan */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -16,10 +15,11 @@ import Form, {
   StringLengthRule,
 } from "devextreme-react/form";
 import notify from "devextreme/ui/notify";
+import 'devextreme-react/switch';
+import 'devextreme/ui/switch';
 
 import FormActions from "../../../components/ui/FormActions";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
-import { TextArea } from "devextreme-react";
 import {
   contactStore,
   getCityDataSource,
@@ -28,7 +28,6 @@ import {
   getCountryDataSource,
   getLeadSourceDataSource,
 } from "../../../services/contactService";
-import { width } from "devexpress-reporting/scopes/reporting-designer-controls-metadata";
 
 const phonePattern = /^[0-9\s\-+()]*$/;
 
@@ -51,13 +50,35 @@ const ContactForm = () => {
   const isEditMode = !!id;
   const isReadOnly = isEditMode && !location.pathname.endsWith("/edit");
 
-  // Data Sources untuk select box negara, status, sumber prospek
-  const countriesDataSource = useMemo(() => getCountryDataSource(), []);
-  const statusesDataSource = useMemo(() => getContactStatusDataSource(), []);
-  const sourcesDataSource = useMemo(() => getLeadSourceDataSource(), []);
-
-  // State untuk menyimpan daftar kota berdasarkan negara yang dipilih
+  // State untuk menyimpan daftar negara, status, sumber prospek dan kota
+  const [lookupRefCountries, setLookupRefCountries] = useState(null);
+  const [lookupRefStatuses, setLookupRefStatuses] = useState(null);
+  const [lookupRefSources, setLookupRefSources] = useState(null);
   const [lookupRefCities, setLookupRefCities] = useState(null);
+  // useEffect untuk memuat data lookup (negara, status, sumber prospek) saat komponen pertama kali dimuat
+  useEffect(() => {
+    const loadLookups = async () => {
+      try {
+        // Ambil semua data lookup secara paralel
+        const [countriesData, statusesData, sourcesData] =
+          await Promise.all([
+            getCountryDataSource().load(),
+            getContactStatusDataSource().load(),
+            getLeadSourceDataSource().load(),
+          ]);
+
+        // Simpan data ke state masing-masing
+        setLookupRefCountries(countriesData);
+        setLookupRefStatuses(statusesData);
+        setLookupRefSources(sourcesData);
+      } catch (error) {
+        notify("Gagal memuat data untuk dropdown.", "error", 2000);
+      }
+    };
+
+    loadLookups();
+  }, []); // Dependensi kosong memastikan ini hanya berjalan sekali
+  // useEffect untuk memuat daftar kota setiap kali negara berubah
   useEffect(() => {
     if (!formData?.country_id) {
       setLookupRefCities(null);
@@ -212,7 +233,7 @@ const ContactForm = () => {
               label={{ text: "Negara" }}
               editorType="dxSelectBox"
               editorOptions={{
-                dataSource: countriesDataSource,
+                dataSource: lookupRefCountries,
                 valueExpr: "country_id",
                 displayExpr: "country_name",
                 searchEnabled: true,
@@ -252,7 +273,7 @@ const ContactForm = () => {
               label={{ text: "Status" }}
               editorType="dxSelectBox"
               editorOptions={{
-                dataSource: statusesDataSource,
+                dataSource: lookupRefStatuses,
                 valueExpr: "contact_status_id",
                 displayExpr: "contact_status_name",
                 placeholder: "Pilih Status...",
@@ -265,7 +286,7 @@ const ContactForm = () => {
               label={{ text: "Sumber Prospek" }}
               editorType="dxSelectBox"
               editorOptions={{
-                dataSource: sourcesDataSource,
+                dataSource: lookupRefSources,
                 valueExpr: "lead_source_id",
                 displayExpr: "lead_source_name",
                 placeholder: "Pilih Sumber Prospek...",
