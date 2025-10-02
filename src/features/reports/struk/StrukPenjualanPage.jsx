@@ -39,6 +39,8 @@ const StrukPenjualanPage = () => {
             value={selectedCategoryId}
             onValueChanged={handleCategoryChange}
             width={250}
+            searchEnabled={true}
+            minSearchLength={2}
           />
           <Button
             text="Preview Report"
