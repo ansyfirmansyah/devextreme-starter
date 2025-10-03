@@ -1,23 +1,3 @@
-/**
- * RolesForm.jsx
- * -------------
- * Komponen form untuk membuat dan mengedit data Role.
- *
- * Fitur:
- * - Mode tambah dan edit, otomatis berdasarkan parameter URL.
- * - Validasi input (wajib, panjang karakter).
- * - Pilihan hak akses (modul) menggunakan TagBox.
- * - Loading spinner saat data diambil.
- * - Notifikasi error jika gagal load/simpan.
- * - Read-only mode jika bukan halaman edit.
- *
- * Dependencies:
- * - React Router (useNavigate, useParams, useLocation)
- * - DevExtreme Form & TagBox
- * - roleService (roleStore, getModuleDataSource)
- * - FormActions, LoadingSpinner, notify
- */
-
 import React, {
   useCallback,
   useEffect,
@@ -38,20 +18,17 @@ import notify from "devextreme/ui/notify";
 import FormActions from "../../../components/ui/FormActions";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import {
-  getGroupedModuleDataSource,
-  getRoleById,
-  roleStore,
-} from "../../../services/roleService";
-import { ArrayStore } from "devextreme/common/data";
+  getRoleDataSource,
+  userRoleStore,
+} from "../../../services/userService";
 
 // Template data baru untuk role
 const newRoleTemplate = {
-  roleId: "",
-  roleCatatan: "",
-  modKodes: [],
+  userId: "",
+  roles: [],
 };
 
-const RolesForm = () => {
+const UserRolesForm = () => {
   const formRef = useRef(null);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -70,7 +47,7 @@ const RolesForm = () => {
   useEffect(() => {
     if (isEditMode) {
       setIsLoading(true);
-      getRoleById(id).then(
+      userRoleStore.byKey(id).then(
         (data) => {
           setFormData(data);
           setIsLoading(false);
@@ -87,7 +64,7 @@ const RolesForm = () => {
   }, [id, isEditMode, navigate]);
 
   // Data source modul untuk TagBox
-  const moduleDataSource = useMemo(() => getGroupedModuleDataSource(), []);
+  const roleDataSource = useMemo(() => getRoleDataSource(), []);
 
   // Handler tombol batal/kembali
   const handleCancel = useCallback(() => {
@@ -106,9 +83,9 @@ const RolesForm = () => {
       try {
         const dataToSave = formInstance.option("formData");
         if (isEditMode) {
-          await roleStore.update(id, dataToSave);
+          await userRoleStore.update(id, dataToSave);
         } else {
-          await roleStore.insert(dataToSave);
+          await userRoleStore.insert(dataToSave);
         }
         handleCancel();
       } catch (err) {
@@ -135,48 +112,40 @@ const RolesForm = () => {
           readOnly={isReadOnly}
         >
           {/* Grup detail role */}
-          <GroupItem caption="Detail Role">
+          <GroupItem caption="Detail User Role">
             <SimpleItem
-              dataField="roleId"
-              label={{ text: "Role ID" }}
-              editorOptions={{ disabled: isEditMode }}
-            >
-              <RequiredRule />
-              <StringLengthRule max={40} />
-            </SimpleItem>
-            <SimpleItem dataField="roleCatatan" label={{ text: "Catatan" }}>
-              <RequiredRule />
-            </SimpleItem>
+              dataField="userId"
+              label={{ text: "ID" }}
+              editorOptions={{ disabled: true }}
+            ></SimpleItem>
+            <SimpleItem
+              dataField="userName"
+              label={{ text: "Name" }}
+              editorOptions={{ disabled: true }}
+            ></SimpleItem>
+            <SimpleItem
+              dataField="userEmail"
+              label={{ text: "Email" }}
+              editorOptions={{ disabled: true }}
+            ></SimpleItem>
           </GroupItem>
           {/* Grup hak akses */}
-          <GroupItem caption="Hak Akses">
+          <GroupItem caption="Role">
             <SimpleItem
-              dataField="modKodes"
-              label={{ text: "Pilih Hak Akses (Modul)" }}
+              dataField="roles"
+              label={{ text: "Pilih Roles" }}
               render={() => (
                 <TagBox
-                  dataSource={{
-                    store: moduleDataSource,
-                    group: [
-                      { selector: "group", desc: true }, // Group descending
-                    ],
-                    sort: [
-                      { selector: "group", desc: true }, // Group descending
-                      { selector: "mod_kode", desc: false }, // Item di dalam group ascending
-                    ],
-                  }}
-                  value={formData.modKodes}
+                  dataSource={roleDataSource}
+                  value={formData.roles}
                   onValueChange={(values) => {
-                    setFormData((prev) => ({ ...prev, modKodes: values }));
+                    setFormData((prev) => ({ ...prev, roles: values }));
                   }}
-                  displayExpr="mod_catatan"
-                  valueExpr="mod_kode"
-                  searchEnabled={true}
-                  placeholder="Ketik untuk mencari hak akses..."
+                  displayExpr="roleId"
+                  valueExpr="roleId"
                   showSelectionControls={true}
                   applyValueMode="useButtons"
                   readOnly={isReadOnly}
-                  grouped={true}
                 />
               )}
             />
@@ -193,4 +162,4 @@ const RolesForm = () => {
   );
 };
 
-export default RolesForm;
+export default UserRolesForm;

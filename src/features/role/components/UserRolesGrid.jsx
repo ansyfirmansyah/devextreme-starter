@@ -18,9 +18,10 @@ import { roleStore } from "../../../services/roleService";
 import { renderHeader } from "../../../components/ui/GridCellRenderers";
 import { navigationRoutes } from "../../../config/navigationConfig";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { userRoleStore } from "../../../services/userService";
 
-const RolesGrid = () => {
-  const [roleDataSource] = useState(() => new DataSource(roleStore));
+const UserRolesGrid = () => {
+  const [userRoleDataSource] = useState(() => new DataSource(userRoleStore));
   const navigate = useNavigate();
 
   // Ambil permissions dari navigationConfig
@@ -30,52 +31,58 @@ const RolesGrid = () => {
       {},
     []
   );
-  const { hasPermission } = usePermissions();
 
-  const handleAdd = () => navigate("new");
-  const handleView = (id) => navigate(`${id}`);
-  const handleEdit = (id) => navigate(`${id}/edit`);
-  const handleDelete = async (id) => {
-    const result = await confirm(
-      "Apakah Anda yakin ingin menghapus role ini?",
-      "Konfirmasi Hapus"
-    );
-    if (result) {
-      try {
-        await roleStore.remove(id);
-        await roleDataSource.reload();
-      } catch (err) {
-        notify(err?.message || "Gagal menghapus data.", "error", 3000);
-      }
-    }
-  };
+  // const handleAdd = () => navigate("new"); // Nonaktifkan tombol tambah user role
+  const handleView = (id) => navigate(`user/${id}`);
+  const handleEdit = (id) => navigate(`user/${id}/edit`);
+  // tidak ada handleDelete karena user role tidak bisa dihapus langsung
 
   const renderActionCell = ({ data }) => {
     return (
       <ActionCell
-        onView={() => handleView(data.roleId)}
-        onEdit={() => handleEdit(data.roleId)}
-        onDelete={() => handleDelete(data.roleId)}
+        onView={() => handleView(data.userId)}
+        onEdit={() => handleEdit(data.userId)}
         editPermissionCode={permissions.edit}
-        deletePermissionCode={permissions.delete}
+        deletePermissionCode={"disabled"} // Nonaktifkan tombol hapus user role
       />
+    );
+  };
+
+  const renderRoleCell = ({ data }) => {
+    // Pastikan ada data roleNames dan merupakan array
+    if (!data.roles || !Array.isArray(data.roles) || data.roles.length === 0) {
+      return <span className="text-gray-400 italic">No roles</span>;
+    }
+
+    // Map setiap nama role menjadi sebuah 'badge'
+    return (
+      <div className="flex flex-wrap gap-1 items-center">
+        {data.roles.map((role, index) => (
+          <div
+            key={index}
+            className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+          >
+            {role}
+          </div>
+        ))}
+      </div>
     );
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
       <DataGrid
-        dataSource={roleDataSource}
+        dataSource={userRoleDataSource}
         height="100%"
         showBorders={true}
         rowAlternationEnabled={true}
         remoteOperations={true}
       >
         <PageHeader
-          title="Role Access List"
+          title="User Role List"
           buttonText="Add"
-          onButtonClick={handleAdd}
-          addPermissionCode={permissions.create}
+          onButtonClick={null} // Nonaktifkan tombol tambah user role
+          addPermissionCode={"disabled"} // Nonaktifkan tombol tambah user role
         />
         <SearchPanel visible={true} width={240} placeholder="Cari..." />
         <FilterRow visible={true} />
@@ -87,28 +94,27 @@ const RolesGrid = () => {
           showInfo={true}
         />
         <Column
-          dataField="roleId"
-          caption="Role ID"
-          headerCellRender={() => renderHeader("Role")}
+          dataField="userId"
+          caption="User ID"
+          headerCellRender={() => renderHeader("User ID")}
         />
         <Column
-          dataField="roleCatatan"
-          caption="Catatan"
-          headerCellRender={() => renderHeader("Description")}
+          dataField="userName"
+          caption="User Name"
+          headerCellRender={() => renderHeader("User Name")}
         />
         <Column
-          dataField="menu"
-          caption="Jumlah Menu"
-          width={150}
+          dataField="userEmail"
+          caption="User Email"
+          headerCellRender={() => renderHeader("Email")}
+        />
+        <Column
+          dataField="roles"
+          caption="Roles"
+          allowSorting={false}
           allowFiltering={false}
-          headerCellRender={() => renderHeader("Jumlah Menu")}
-        />
-        <Column
-          dataField="action"
-          caption="Jumlah Action"
-          width={150}
-          allowFiltering={false}
-          headerCellRender={() => renderHeader("Jumlah Action")}
+          headerCellRender={() => renderHeader("Roles")}
+          cellRender={renderRoleCell}
         />
         <Column
           caption="Aksi"
@@ -124,4 +130,4 @@ const RolesGrid = () => {
   );
 };
 
-export default RolesGrid;
+export default UserRolesGrid;
