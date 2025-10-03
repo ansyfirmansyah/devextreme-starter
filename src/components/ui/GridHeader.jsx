@@ -1,6 +1,7 @@
 import React from "react";
 import { Toolbar, Item } from "devextreme-react/data-grid";
 import { usePermissions } from "../../hooks/usePermissions";
+import { Export } from "devextreme-react/cjs/data-grid";
 
 /**
  * Komponen header grid standar.
@@ -76,6 +77,7 @@ export const GridHeaderWithUpload = ({
       <Item location="before">
         <h2 className="text-xl font-semibold text-bi-slate-800">{title}</h2>
       </Item>
+      <Item name="exportButton" location="after" />
       {/* Tombol "Add" di sebelah kanan */}
       {hasPermission(addPermissionCode) && (
         <Item

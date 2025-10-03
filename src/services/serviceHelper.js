@@ -9,6 +9,7 @@ import notify from "devextreme/ui/notify";
  * @returns DevExtreme Data Store
  */
 export const createCrudStore = (keyField, apiEndpoints, entityName) => {
+  console.log("cek create store", apiEndpoints);
   return createStore({
     key: keyField,
     loadUrl: apiEndpoints.get,

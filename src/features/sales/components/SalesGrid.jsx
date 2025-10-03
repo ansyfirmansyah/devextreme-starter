@@ -7,10 +7,19 @@ import DataGrid, {
   SearchPanel,
   HeaderFilter,
   Pager,
+  Export,
 } from "devextreme-react/data-grid";
 import notify from "devextreme/ui/notify";
 import { confirm } from "devextreme/ui/dialog";
 import DataSource from "devextreme/data/data_source";
+
+// Library untuk export PDF dan Excel
+import { exportDataGrid as exportDataGridToPdf } from "devextreme/pdf_exporter";
+import { exportDataGrid as exportDataGridToXlsx } from "devextreme/excel_exporter";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 import ActionCell from "../../../components/ui/ActionCell";
 import { salesStore } from "../../../services/salesService";
@@ -91,6 +100,88 @@ const SalesGrid = () => {
     }
   };
 
+  // Handler eksport data
+  const onExporting = (e) => {
+    e.cancel = true; // Selalu batalkan proses default
+    console.log("masuk 1 pada jam: ", new Date().toISOString());
+
+    // Buat datasource sementara untuk mengambil semua data
+    const tempDataSource = new DataSource({
+      store: salesStore,
+      filter: salesDataSource.filter(),
+      sort: salesDataSource.sort(),
+      paginate: false,
+      requireTotalCount: false,
+    });
+
+    console.log("masuk 2 pada jam: ", new Date().toISOString());
+    // notify("Mempersiapkan data untuk ekspor...", "info", 2000);
+
+    const cekData = tempDataSource.load();
+    console.log("cek data", cekData);
+
+    tempDataSource
+      .load()
+      .then((allData) => {
+        console.log("masuk 3 pada jam: ", new Date().toISOString());
+        if (e.format === "xlsx") {
+          // --- LOGIKA UNTUK EXCEL ---
+          const workbook = new ExcelJS.Workbook();
+          const worksheet = workbook.addWorksheet("Sales");
+          exportDataGridToXlsx({
+            component: e.component,
+            worksheet: worksheet,
+            autoFilterEnabled: true,
+            dataSource: allData,
+          }).then(() => {
+            workbook.xlsx.writeBuffer().then((buffer) => {
+              saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                "SalesData.xlsx"
+              );
+            });
+            notify("Ekspor ke Excel berhasil!", "success", 2000);
+          });
+        } else if (e.format === "pdf") {
+          // --- LOGIKA UNTUK PDF ---
+          const doc = new jsPDF();
+          exportDataGridToPdf({
+            jsPDFDocument: doc,
+            component: e.component,
+            dataSource: allData,
+          }).then(() => {
+            doc.save("SalesData.pdf");
+            notify("Ekspor ke PDF berhasil!", "success", 2000);
+          });
+        } else if (e.format === "csv") {
+          // --- LOGIKA UNTUK CSV ---
+          // DevExtreme tidak punya fungsi CSV bawaan, kita buat manual sederhana
+          const header = e.component
+            .getVisibleColumns()
+            .map((c) => c.caption || c.dataField)
+            .join(",");
+          const rows = allData
+            .map((row) =>
+              e.component
+                .getVisibleColumns()
+                .map((c) => row[c.dataField])
+                .join(",")
+            )
+            .join("\\n");
+
+          const csvContent = `${header}\\n${rows}`;
+          saveAs(
+            new Blob([csvContent], { type: "text/csv;charset=utf-8;" }),
+            "SalesData.csv"
+          );
+          notify("Ekspor ke CSV berhasil!", "success", 2000);
+        }
+      })
+      .catch((err) => {
+        notify("Gagal mengambil semua data untuk ekspor.", "error", 3000);
+      });
+  };
+
   // Render fungsi khusus untuk kolom Actions
   const renderActionCell = ({ data }) => {
     return (
@@ -108,6 +199,7 @@ const SalesGrid = () => {
     <div className="bg-white rounded-lg shadow-sm">
       <DataGrid
         dataSource={salesDataSource}
+        onExporting={onExporting}
         height="100%"
         showBorders={true}
         rowAlternationEnabled={true}
@@ -124,6 +216,7 @@ const SalesGrid = () => {
           addPermissionCode={permissions.create}
           uploadPermissionCode={permissions.upload}
         />
+        <Export enabled={true} formats={['xlsx', 'pdf', 'csv']} />
         <SearchPanel visible={true} width={240} placeholder="Search..." />
         <FilterRow visible={true} />
         <HeaderFilter visible={true} />

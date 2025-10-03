@@ -276,6 +276,7 @@ export const setupDevExtremeAuthInterceptor = () => {
     };
 
     // Call original send method
+    console.log("cek send", this._requestUrl, this._requestMethod, this._requestHeaders);
     return originalXHRSend.call(this, data);
   };
 
